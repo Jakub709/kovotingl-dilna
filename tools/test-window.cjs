@@ -1,0 +1,27 @@
+const fs=require('fs'),path=require('path');const {app,BrowserWindow}=require('electron');
+const out=path.resolve(__dirname,'../.test-output');fs.mkdirSync(out,{recursive:true});
+process.env.KOVO_TEST_DATA=path.join(out,'user-data');
+const log=(...x)=>fs.appendFileSync(path.join(out,'window.log'),x.join(' ')+'\n');
+const originalError=console.error;console.error=(...x)=>{log('ERROR',...x);originalError(...x)};
+require('../main.js');
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+app.whenReady().then(async()=>{try{
+ await wait(1500);const w=BrowserWindow.getAllWindows()[0];
+ w.webContents.on('console-message',(_e,level,msg)=>{if(level>=2)log('CONSOLE',msg)});
+ w.setSize(1440,950);w.unmaximize();await wait(1800);
+ const js=s=>w.webContents.executeJavaScript(s);
+ log('READY',await js('!!window.app?.simple'));
+ await wait(500);fs.writeFileSync(path.join(out,'01-empty.png'),(await w.capturePage()).toPNG());
+ log('LAYOUT',await js(`JSON.stringify({width:innerWidth,height:innerHeight,canvas:document.getElementById('canvas2d').getBoundingClientRect().toJSON(),page:document.body.dataset.page})`));
+ await js(`window.app.simple.frameDialog();document.querySelector('#modalBody [data-simple-field="width"]').value='900';document.querySelector('#modalBody [data-simple-field="height"]').value='1000';document.querySelector('#modalFoot .primary').click();true`);
+ await wait(700);
+ log('FRAME',await js('window.app.store.project.ofType("frame").length'));
+ await js(`document.querySelector('[data-simple-act="fill"]').click();true`);await wait(500);
+ log('FILL',await js('window.app.store.derived.parts.length'));
+ await js(`window.app.store.select(window.app.store.project.ofType('frame')[0].id);window.app.canvas.fit();true`);await wait(500);
+ fs.writeFileSync(path.join(out,'02-frame.png'),(await w.capturePage()).toPNG());
+ await js(`window.app.setMode('3d');true`);await wait(800);fs.writeFileSync(path.join(out,'03-3d.png'),(await w.capturePage()).toPNG());
+ await js(`window.app.command('out.bom');true`);await wait(500);fs.writeFileSync(path.join(out,'04-bom.png'),(await w.capturePage()).toPNG());
+ await js(`window.app.command('out.cut');true`);await wait(500);fs.writeFileSync(path.join(out,'05-cut.png'),(await w.capturePage()).toPNG());
+ log('DONE');app.exit(0);
+ }catch(e){log('FAILED',e.stack);app.exit(1)}});

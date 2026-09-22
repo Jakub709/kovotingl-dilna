@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self';" />
+  <title>KovoTingl Dílna</title>
+  <link rel="stylesheet" href="./css/app.css" /><link rel="stylesheet" href="./css/simple.css" />
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════ horní rychlá lišta ══ -->
+<header class="toolbar" id="toolbar">
+  <a class="brand" href="#" id="homeButton" title="Začít nový projekt"><span class="brand-mark">K<span>·</span></span><span>KovoTingl <b>Dílna</b></span></a>
+  <div class="project-area"><div class="proj-name" id="projTitle" title="Přejmenovat projekt">Nový projekt</div><span id="saveState">Připraveno ke kreslení</span></div>
+  <div class="tb-spacer"></div>
+  <button class="header-btn" data-cmd="file.new">Nový</button><button class="header-btn" data-cmd="file.open">Otevřít</button>
+  <button class="header-btn" id="simpleHelp">Jak na to</button><button class="header-btn save-button" data-cmd="file.save"><span data-ico="save"></span>Uložit projekt</button>
+</header>
+<nav class="workflow" aria-label="Pracovní pohled">
+  <div class="page-tabs"><button class="page-tab active" data-cmd="view.2d" data-page="2d" id="btn2d"><span data-ico="pencil"></span>Výkres</button>
+  <button class="page-tab" data-cmd="view.3d" data-page="3d" id="btn3d"><span data-ico="cube"></span>3D kontrola</button>
+  <button class="page-tab" data-cmd="out.bom" data-page="bom"><span data-ico="bom"></span>Seznam dílů <small id="pieceCount">0</small></button>
+  <button class="page-tab" data-cmd="out.cut" data-page="cut"><span data-ico="cut"></span>Nářez tyčí</button></div>
+  <div class="workflow-actions"><button class="icon-btn" data-cmd="edit.undo" id="btnUndo" title="Zpět (Ctrl+Z)" aria-label="Zpět"><span data-ico="undo"></span></button>
+  <button class="icon-btn" data-cmd="edit.redo" id="btnRedo" title="Znovu (Ctrl+Y)" aria-label="Znovu"><span data-ico="redo"></span></button>
+  <span class="divider"></span><button class="header-btn" id="simpleExport"><span data-ico="pdf"></span>Výstupy / tisk</button></div>
+</nav>
+
+<!-- ══════════════════════════════════════════════════ hlavní plocha ══ -->
+<main class="workspace" id="workspace">
+
+  <!-- ─────────────────────────────────── levá nástrojová lišta ── -->
+  <nav class="tools" id="tools" aria-label="Kreslicí nástroje">
+ <span class="rail-caption">NÁSTROJE</span>
+ <button class="tool" data-tool="select" title="Vybrat a posunout (V)"><span data-ico="cursor"></span><span>Vybrat</span><kbd>V</kbd></button>
+ <button class="tool active" data-tool="sketch" title="Načrtnout tvar od ruky (N)"><span data-ico="pencil"></span><span>Kreslit</span><kbd>N</kbd></button>
+ <button class="tool" data-tool="line" title="Přímý nebo lomený profil; body potvrď dvojklikem"><span data-ico="line"></span><span>Profil</span><kbd>C</kbd></button>
+ <button class="tool" data-tool="rect" title="Rám tažením myši"><span data-ico="rect"></span><span>Rám</span><kbd>R</kbd></button>
+ <button class="tool" data-tool="fill" title="Klikni dovnitř rámu"><span data-ico="fill"></span><span>Výplň</span></button>
+ <span class="rail-caption secondary-caption">DOPLNIT</span>
+ <button class="tool" data-tool="plate" title="Patka nebo plech tažením"><span data-ico="plate"></span><span>Patka</span></button>
+ <button class="tool" data-tool="hole" title="Klikni na plech"><span data-ico="hole"></span><span>Otvor</span></button>
+ <details class="more-tools"><summary>Další nástroje <span>⌄</span></summary>
+ <button class="tool" data-tool="mesh"><span data-ico="mesh"></span><span>Pletivo</span></button>
+ <button class="tool" data-tool="ref"><span data-ico="wall"></span><span>Zeď / okolí</span></button>
+ <button class="tool" data-tool="dim"><span data-ico="dim"></span><span>Kóta</span></button>
+ <button class="tool" data-tool="group"><span data-ico="group"></span><span>Sestava</span></button></details>
+ <div class="rail-bottom"><button class="header-btn" id="quickShape">+ Podle rozměrů</button><button class="header-btn" data-cmd="materials.open">Materiály</button></div>
+</nav>
+
+  <!-- ─────────────────────────────────────── střední plocha ───── -->
+  <section class="stage" id="stage">
+    <div class="viewport" id="viewport2d">
+      <canvas id="canvas2d" aria-label="Kreslicí plocha"></canvas>
+ <div class="canvas-top"><span id="toolHint">Načrtni tvar jedním tahem. Kóty pak stačí přepsat.</span><button class="mini" data-cmd="view.fit">Zobrazit vše</button></div>
+ <div class="empty-canvas" id="emptyCanvas"><span class="eyebrow">OD NÁČRTU K VÝROBĚ</span><h1>Začni jedním tahem.</h1><p>Nakresli rám, čáru nebo lomený profil.<br>Tvar narovnáme. Přesné rozměry doplníš potom.</p>
+ <svg class="sketch-demo" viewBox="0 0 340 150" aria-hidden="true"><path d="M38 120L41 31 285 28 290 121 37 119" fill="none" stroke="#b1b7b9" stroke-width="2" stroke-dasharray="5 5"/><path d="M45 115V35H283V115Z" fill="#ffffffbb" stroke="#263d43" stroke-width="3"/><path d="M45 139H283M45 132v14M283 132v14" fill="none" stroke="#e08143" stroke-width="1.5"/><rect x="132" y="129" width="64" height="20" fill="#f8faf9"/><text x="164" y="144" text-anchor="middle" fill="#b95b26" font-size="14" font-family="Segoe UI">900 mm</text><circle cx="45" cy="35" r="4" fill="#d57938"/></svg>
+ <div class="starter-buttons"><button id="emptyDraw" class="btn primary">Kreslit myší</button><button id="emptyFrame" class="btn">Zadat rozměry rámu</button></div><small>Bez přesného míření. Každou změnu můžeš vrátit.</small></div>
+ <div class="canvas-bottom"><span><b>Kolečko</b> přiblíží · <b>prostřední tlačítko</b> posouvá</span><button class="mini" id="revealObjects">Prvky projektu</button></div>
+      <div class="dim-editor hidden" id="dimEditor">
+        <input type="text" id="dimInput" autocomplete="off" spellcheck="false" />
+        <span class="dim-unit" id="dimUnit">mm</span>
+      </div>
+      <div class="recog-popup hidden" id="recogPopup">
+        <div class="recog-title">Co to má být?</div>
+        <div class="recog-list" id="recogList"></div>
+        <div class="recog-hint">Esc = zahodit náčrt</div>
+      </div>
+      <div class="canvas-badges" id="canvasBadges"></div>
+    </div>
+
+    <div class="viewport hidden" id="viewport3d">
+      <canvas id="canvas3d"></canvas>
+      <div class="v3d-toolbar">
+        <button class="mini" data-v3d="fit" title="Přizpůsobit">Přizpůsobit</button>
+        <button class="mini" data-v3d="front" title="Pohled zepředu">Zepředu</button>
+        <button class="mini" data-v3d="iso" title="Izometrický pohled">Izo</button>
+        <button class="mini" data-v3d="top" title="Pohled shora">Shora</button>
+        <label class="mini-check"><input type="checkbox" id="v3dEdges" checked /> Hrany</label>
+        <label class="mini-check"><input type="checkbox" id="v3dRef" /> Okolí</label>
+      </div>
+      <div class="v3d-hint">Levé tlačítko otáčí · pravé posouvá · kolečko přibližuje</div>
+    </div>
+
+    <!-- pás varování pod plátnem -->
+    <div class="issuebar hidden" id="issueBar">
+      <span class="issue-ico" data-ico="warn"></span>
+      <span class="issue-text" id="issueText"></span>
+      <button class="link" id="issueDetails">Zobrazit detaily</button>
+      <label class="issue-toggle"><input type="checkbox" id="autoValidate" checked /> Automatická kontrola</label>
+    </div>
+  </section>
+
+  <!-- ─────────────────────────────────────── pravý panel ──────── -->
+  <aside class="side" id="side"><div class="inspector-head"><span>VYBRANÝ PRVEK</span><button class="mini" id="detailToggle">Podrobnosti</button></div><div id="simpleProps"></div>
+    <div class="panel" id="panelProps">
+      <div class="panel-head">
+        <span>Vlastnosti</span>
+        <button class="panel-toggle" data-panel="props" title="Sbalit">▾</button>
+      </div>
+      <div class="panel-body" id="propsBody">
+        <div class="empty">Vyber prvek ve výkresu.</div>
+      </div>
+    </div>
+
+    <div class="panel panel-3d" id="panel3d">
+      <div class="panel-head">
+        <span>3D náhled</span>
+        <button class="panel-toggle" data-panel="mini3d" title="Sbalit">▾</button>
+      </div>
+      <div class="panel-body no-pad">
+        <div class="mini3d" id="mini3d"><canvas id="canvasMini3d"></canvas></div>
+      </div>
+    </div>
+  </aside>
+</main>
+
+<!-- ═══════════════════════════════════════════════ dolní výstupy ══ -->
+<section class="outputs" id="outputs">
+  <div class="out-pane" id="paneBom">
+    <div class="out-head">
+      <span class="out-title">Seznam dílů k výrobě</span>
+      <div class="out-tools">
+        <button class="icon-btn" id="bomRename" title="Přejmenovat díl">✎</button>
+        <button class="icon-btn" id="bomSettings" title="Nastavení kusovníku">⚙</button>
+        <select class="mini-select" id="bomFilterAsm" title="Filtr podle sestavy"><option value="">Všechny sestavy</option></select>
+        <select class="mini-select" id="bomFilterMat" title="Filtr podle materiálu"><option value="">Všechny materiály</option></select>
+        <button class="icon-btn" id="bomPdf" title="Kusovník do PDF">PDF</button>
+      </div>
+    </div>
+    <div class="out-body" id="bomBody"></div>
+  </div>
+
+  <div class="out-split" id="outSplit"></div>
+
+  <div class="out-pane" id="paneCut">
+    <div class="out-head">
+      <span class="out-title">Jak rozřezat skladové tyče</span>
+      <div class="out-tools">
+        <label class="mini-field">Prořez <input type="number" id="kerfInput" min="0" max="20" step="0.5" value="3" /> mm</label>
+        <label class="mini-check" title="Označit návazné pokosy; prořez se vždy započítává"><input type="checkbox" id="sharedMiter" /> Návazné pokosy</label>
+        <button class="icon-btn" id="cutUnlock" title="Zrušit ruční rozložení">Obnovit</button>
+        <button class="icon-btn" id="cutPdf" title="Nářez do PDF">PDF</button>
+      </div>
+    </div>
+    <div class="out-body" id="cutBody"></div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════ stavový řádek ══ -->
+<footer class="status" id="status">
+  <span class="st">Jednotky: <b>mm</b></span>
+  <span class="st">Mřížka: <b id="stGrid">10 mm</b></span>
+  <span class="st">Uchopování: <b id="stSnap" class="on">Zapnuto</b></span>
+  <span class="st">X: <b id="stX">0</b></span>
+  <span class="st">Y: <b id="stY">0</b></span>
+  <span class="st" id="stZoom">100 %</span>
+  <span class="st-spacer"></span>
+  <span class="st" id="stTool">Nástroj: Výběr</span>
+  <span class="st" id="stVersion">Verze 1.0.0</span>
+  <span class="st" id="stSaved">Neuloženo</span>
+  <span class="st st-issues" id="stIssues"></span>
+</footer>
+
+<!-- ═══════════════════════════════════════════════════════ dialogy ══ -->
+<div class="modal-backdrop hidden" id="modalBackdrop">
+  <div class="modal" id="modal" role="dialog" aria-modal="true">
+    <div class="modal-head"><span id="modalTitle">Dialog</span><button class="modal-x" id="modalClose">×</button></div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-foot" id="modalFoot"></div>
+  </div>
+</div>
+
+<div class="toast-wrap" id="toasts"></div>
+
+<div class="ctxmenu hidden" id="ctxMenu"></div>
+
+<script type="module" src="./ui/app.js"></script>
+</body>
+</html>
