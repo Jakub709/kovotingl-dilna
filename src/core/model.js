@@ -4,8 +4,10 @@
  */
 import { newId, bumpCounter } from './ids.js';
 import * as G from './geom.js';
+import {pruneNodes3,validateSpatialDocument} from './spatial.js';
+import {validatePlate3,detachPlate3} from './spatial-plates.js';
 
-export const FORMAT_VERSION = 1;
+export const FORMAT_VERSION = 4;
 
 /** Režimy rohového spoje rámu (§9.1). */
 export const CORNER_MODES = [
@@ -30,6 +32,8 @@ export const OBJECT_LABELS = {
   plate: 'Plech / patka',
   ref: 'Okolí / zeď',
   dim: 'Kóta',
+  member3d: '3D profil',
+  plate3d: '3D plech / patka',
 };
 
 /* ------------------------------------------------------------- řez ------- */
@@ -214,6 +218,7 @@ export class Project {
     this.settings = { ...defaultSettings(), ...(p.settings || {}) };
     this.assemblies = (p.assemblies || []).map((a) => makeAssembly(a));
     this.objects = p.objects || [];
+    this.nodes3d = p.nodes3d || [];
     /** Snapshot materiálů použitých v projektu (§18). */
     this.materials = p.materials || {};
     /** Ruční zámky nářezu: { [materialId]: { locked:true, bars:[[partKey,...]] } } */
@@ -237,9 +242,15 @@ export class Project {
   remove(id) {
     const i = this.objects.findIndex((o) => o.id === id);
     if (i < 0) return null;
+    for(const plate of this.objects.filter(o=>o.type==='plate3d'&&o.attachment?.memberId===id))detachPlate3(this,plate);
     const [obj] = this.objects.splice(i, 1);
     // Závislé objekty (výplně/pletivo v rámu, kóty na objekt) odstraníme s ním.
     this.objects = this.objects.filter((o) => !(('frameId' in o) && o.frameId === id));
+    if(obj.type==='member3d') pruneNodes3(this);
+    if(obj.type==='member3d'){
+      for(const n of this.nodes3d)if(n.binding?.memberId===id)delete n.binding;
+      for(const m of this.objects.filter(o=>o.type==='member3d'))for(const [e,j]of Object.entries(m.ends||{}))if(j.targetId===id)m.ends[e]={kind:'unresolved'};
+    }
     return obj;
   }
   /** Objekty patřící do sestavy. */
@@ -296,6 +307,7 @@ export class Project {
       settings: this.settings,
       assemblies: this.assemblies,
       objects: this.objects,
+      nodes3d: this.nodes3d,
       materials: this.materials,
       cutLocks: this.cutLocks,
       partNames: this.partNames,
@@ -317,6 +329,7 @@ export class Project {
 /** Migrační mechanismus pro budoucí verze formátu (§18). */
 function migrate(data) {
   let d = data;
+  if((d.formatVersion||1)<2) d={...d,nodes3d:d.nodes3d||[]};
   if (!d.formatVersion || d.formatVersion < 1) {
     d = { ...d, formatVersion: 1 };
   }
@@ -439,7 +452,7 @@ export function cloneObject(obj, idMap = null) {
 function validateDocument(d) {
   const fail=()=>{throw new Error('Projekt obsahuje neplatná data. Původní výkres zůstává otevřený.')};
   if(!Array.isArray(d.objects)||d.objects.length>5000)fail();
-  const ids=new Set(),types=new Set(['frame','profile','plate','fill','mesh','ref','dim']);
+  const ids=new Set(),types=new Set(['frame','profile','plate','fill','mesh','ref','dim','member3d','plate3d']);
   const finite=v=>typeof v==='number'&&Number.isFinite(v)&&Math.abs(v)<=1e8;
   const point=p=>p&&finite(p.x)&&finite(p.y);
   for(const obj of d.objects){
@@ -453,4 +466,6 @@ function validateDocument(d) {
   }
   if(d.assemblies&&!Array.isArray(d.assemblies))fail();
   if(d.settings&&(!finite(d.settings.kerf??3)||!finite(d.settings.gridStep??10)))fail();
+  validateSpatialDocument(d);
+  for(const o of d.objects.filter(o=>o.type==='plate3d'))validatePlate3(d,o);
 }

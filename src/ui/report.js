@@ -1,3 +1,6 @@
+import {spatialObjects} from '../core/spatial-plates.js';
+import {spatialEnvelope} from '../core/spatial-collisions.js';
+import {plateDetail} from './spatial-solids.js';
 /**
  * Tisk a export do PDF (§19).
  *
@@ -11,6 +14,8 @@ import { dimensionText, noteText } from './bom.js';
 import { Renderer, View } from './render2d.js';
 import * as G from '../core/geom.js';
 import { objectBBox } from '../core/model.js';
+import {members3,endpoints3} from '../core/spatial.js';
+import {fabricationDetail} from './spatial-workshop.js';
 
 const esc = (s) =>
   String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -162,8 +167,8 @@ function bomSheet(store) {
         <td>${esc(r.materialName || '–')}</td>
         <td class="num">${dimensionText(r)}</td>
         <td class="num">${r.count}</td>
-        <td>${r.kind === 'profil' ? cutGlyph(r.cutL, 'left') + ' ' + fmtAngle(r.cutL.angle, 1) : '–'}</td>
-        <td>${r.kind === 'profil' ? cutGlyph(r.cutR, 'right') + ' ' + fmtAngle(r.cutR.angle, 1) : '–'}</td>
+        <td>${r.productionReady===false?'Neurčeno':r.axis3d?'3D · viz detail':r.kind === 'profil' ? cutGlyph(r.cutL, 'left') + ' ' + fmtAngle(r.cutL.angle, 1) : '–'}</td>
+        <td>${r.productionReady===false?'Neurčeno':r.axis3d?'3D · viz detail':r.kind === 'profil' ? cutGlyph(r.cutR, 'right') + ' ' + fmtAngle(r.cutR.angle, 1) : '–'}</td>
         <td>${esc(noteText(r))}</td>
       </tr>`);
     }
@@ -171,7 +176,7 @@ function bomSheet(store) {
 
   // Grafické náhledy dílů s řezy (§19).
   const previews = rows
-    .filter((r) => r.kind === 'profil')
+    .filter((r) => r.kind === 'profil' && r.productionReady!==false)
     .map(
       (r) => `<div class="piece">
         <b>${esc(r.name)}</b>
@@ -205,7 +210,7 @@ function cutSheet(store) {
   const plans = store.derived.plans;
   if (!plans.length) {
     return `<div class="sheet">${header(p, 'Nářezový plán')}
-      <p>Projekt neobsahuje profilové díly s materiálem, nářezový plán se nevytváří.</p></div>`;
+      <p>${members3(p).length?'U 3D návrhu je nejprve nutné dopočítat prostorové spoje a výrobní řezy. Osové délky jsou v kusovníku.':'Projekt neobsahuje profilové díly s materiálem, nářezový plán se nevytváří.'}</p></div>`;
   }
 
   const blocks = plans
@@ -231,7 +236,7 @@ function cutSheet(store) {
     })
     .join('');
 
-  const summary = materialSummary(store.derived.parts)
+  const summary = materialSummary(store.derived.parts.filter(p=>p.productionReady!==false))
     .map(
       (m) => `<tr><td>${esc(m.materialName)}</td><td class="num">${m.pieces}</td>
         <td class="num">${fmtLen(m.totalLength)} mm</td>
@@ -277,9 +282,15 @@ function issuesBlock(store) {
  */
 export function buildReport(store, sections) {
   const parts = [];
-  if (sections.includes('drawing')) parts.push(drawingSheet(store, renderDrawingImage(store)));
+  if (sections.includes('drawing')) {
+    if(store.project.objects.some(o=>!['member3d','plate3d'].includes(o.type))||!spatialObjects(store.project).length)parts.push(drawingSheet(store, renderDrawingImage(store)));
+    if(spatialObjects(store.project).length)parts.push(spatialSheet(store));
+  }
   if (sections.includes('bom')) parts.push(bomSheet(store));
   if (sections.includes('cut')) parts.push(cutSheet(store));
+  if(sections.includes('cut')||sections.includes('bom'))for(const part of store.derived.parts.filter(p=>p.axis3d&&p.productionReady))parts.push(`<div class="sheet">${header(store.project,'Geometrie 3D řezů')}${fabricationDetail(part)}</div>`);
+
+  if(sections.includes('drawing')||sections.includes('bom'))for(const part of store.derived.parts.filter(p=>p.plate3d))parts.push(`<div class="sheet">${header(store.project,'Výkres prostorového plechu')}${plateDetail(part)}</div>`);
 
   // Kontrolní list se přidá na konec první stránky, aby si ho nikdo nepřehlédl.
   const issues = issuesBlock(store);
@@ -291,7 +302,21 @@ export function buildReport(store, sections) {
 
   return `<!doctype html><html lang="cs"><head><meta charset="utf-8">
     <title>${esc(store.project.name)}</title><style>${CSS}</style></head>
-    <body>${parts.join('')}</body></html>`;
+    <body>${members3(store.project).length?'<p style="color:#854d20">3D: nářez obsahuje pouze díly s vyřešenými konci. Nákres tyče ukazuje polotovary; prostorové řezy určuje samostatný detail rohů průřezu. Nevyřešené díly mají pouze osové délky.</p>':''}${parts.join('')}</body></html>`;
+}
+
+function spatialSheet(store){
+  const p=store.project,shapes=store.derived.parts.filter(part=>(part.axis3d||part.plate3d)&&p.isVisible(p.byId(part.objectId))).map(part=>spatialEnvelope(p,part)).filter(Boolean);
+  const edges=[[0,1],[1,2],[2,3],[3,0],[4,5],[5,6],[6,7],[7,4],[0,4],[1,5],[2,6],[3,7]];
+  const views=[['Půdorys · X / Z','x','z'],['Čelo · X / Y','x','y'],['Bok · Z / Y','z','y']];
+  const drawings=views.map(([label,u,v])=>{
+    const pts=shapes.flatMap(s=>s.vertices);if(!pts.length)return '';
+    const minU=Math.min(...pts.map(n=>n[u])),maxU=Math.max(...pts.map(n=>n[u])),minV=Math.min(...pts.map(n=>n[v])),maxV=Math.max(...pts.map(n=>n[v]));
+    const scale=Math.min(320/Math.max(maxU-minU,1),320/Math.max(maxV-minV,1));
+    const x=n=>40+(320-(maxU-minU)*scale)/2+(n[u]-minU)*scale,y=n=>60+(320-(maxV-minV)*scale)/2+(maxV-n[v])*scale;
+    return `<svg viewBox="0 0 400 450" style="width:32%;display:inline-block"><text x="200" y="25" text-anchor="middle" font-family="sans-serif" font-size="17">${label}</text>${shapes.map(s=>edges.map(([i,j])=>`<line x1="${x(s.vertices[i])}" y1="${y(s.vertices[i])}" x2="${x(s.vertices[j])}" y2="${y(s.vertices[j])}" stroke="#355c54" stroke-width="1"/>`).join('')).join('')}<text x="200" y="422" text-anchor="middle" font-family="sans-serif" font-size="14">Vnější rozměr ${Math.round((maxU-minU)*10)/10} × ${Math.round((maxV-minV)*10)/10} mm</text></svg>`;
+  }).join('');
+  return `<div class="sheet">${header(p,'3D konstrukce – hranové pohledy')}<p>Vnější hrany včetně skrytých. Detaily řezů a otvorů jsou na samostatných listech. X = šířka, Y = výška, Z = hloubka.</p>${drawings}</div>`;
 }
 
 export const REPORT_TITLES = {

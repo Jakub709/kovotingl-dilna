@@ -1,4 +1,6 @@
 import {resolveReferences} from './constraints.js';
+import {resolveSpatialBindings} from './spatial-bindings.js';
+import {isLocked3,plateFrame} from './spatial-plates.js';
 /**
  * Centrální stav aplikace.
  *
@@ -66,6 +68,9 @@ export class Store {
     const before = this.snapshot();
     try {
       fn(this.project);
+      resolveSpatialBindings(this.project);
+      const prior=JSON.parse(before);
+      for(const old of prior.objects.filter(o=>o.type==='plate3d'&&isLocked3(prior,o))){const current=this.project.byId(old.id);if(!current||JSON.stringify({...current,locked:old.locked})!==JSON.stringify(old)||JSON.stringify(plateFrame(prior,old))!==JSON.stringify(plateFrame(this.project,current)))throw Error('Operace by změnila zamčený prostorový plech.');}
     } catch (err) {
       console.error(`operace "${label}" selhala:`, err);
       // Vrátíme model do stavu před chybou, aby aplikace zůstala použitelná.
@@ -187,6 +192,7 @@ export class Store {
   recompute() {
     const p = this.project;
     resolveReferences(p);
+    resolveSpatialBindings(p);
     const parts = buildParts(p, this.library);
     const bom = buildBOM(p, parts);
     const plans = buildCutPlans(p, parts);

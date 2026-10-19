@@ -15,6 +15,7 @@ const span = p => p.stockSpan ?? p.length;
  * kusu delší hranu protilehlou – proto opačná orientace.
  */
 export function sharedMiterCompatible(cutRight, cutLeft) {
+  if(cutRight?.spatial||cutLeft?.spatial)return false;
   if (!cutRight || !cutLeft) return false;
   const d1 = deviationOf(cutRight);
   const d2 = deviationOf(cutLeft);
@@ -35,6 +36,7 @@ export function buildCutPlans(project, parts) {
 
   const groups = new Map();
   for (const p of parts) {
+    if(p.productionReady===false) continue;
     if (p.kind !== 'profil') continue; // plech ani pletivo se z tyčí neřežou (§10, §9.3)
     if (!p.materialId || !(p.length > 0)) continue;
     if (!groups.has(p.materialId)) groups.set(p.materialId, []);

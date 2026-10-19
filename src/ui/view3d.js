@@ -54,6 +54,7 @@ export class View3D {
       };
       this.controls.addEventListener('change', () => this.requestRender());
       canvas.addEventListener('contextmenu', (e) => e.preventDefault());
+      canvas.addEventListener('pointerdown',e=>{this.pointerStart={x:e.clientX,y:e.clientY}});
       if (opts.onPick) canvas.addEventListener('click', (e) => this.pick(e));
     }
 
@@ -166,7 +167,9 @@ export class View3D {
   addProfilePart(part) {
     const store = this.store;
     const mat = store.project.material(part.materialId, store.library);
-    if (!mat || !part.axis) return;
+    if (!mat) return;
+    if(part.axis3d){this.addExtrusion(part,mat,part.axis3d.a,part.axis3d.b,part.cutL,part.cutR);return;}
+    if(!part.axis)return;
 
     const obj = store.project.byId(part.objectId);
     const bent = part.bendGeometry && obj?.type === 'profile' && obj.points.length > 2;
@@ -188,7 +191,7 @@ export class View3D {
 
   /** Vytažení průřezu podél osy se zkosenými konci. */
   addExtrusion(part, mat, a, b, cutA, cutB) {
-    const L = G.dist(a, b);
+    const L = part.axis3d ? Math.hypot(b.x-a.x,b.y-a.y,b.z-a.z) : G.dist(a, b);
     if (L < 0.01) return;
 
     const outline = sectionOutline(mat);
@@ -205,7 +208,11 @@ export class View3D {
     const oB = cutB?.orient || 0;
 
     // Posun vrcholů na koncích podle roviny řezu – vznikne skutečný pokos.
-    if (extA > 0 || extB > 0) {
+    if(part.axis3d&&part.fabrication?.start&&part.fabrication?.end&&!part.fabrication.issues.length){
+      const pos=geo.attributes.position;
+      for(let i=0;i<pos.count;i++){const plane=pos.getZ(i)<L/2?part.fabrication.start:part.fabrication.end;pos.setZ(i,plane.t+plane.su*pos.getX(i)+plane.sv*pos.getY(i));}
+      pos.needsUpdate=true;geo.computeVertexNormals();
+    } else if (!part.axis3d&&(extA > 0 || extB > 0)) {
       const pos = geo.attributes.position;
       for (let i = 0; i < pos.count; i++) {
         const x = pos.getX(i);
@@ -217,6 +224,15 @@ export class View3D {
       geo.computeVertexNormals();
     }
 
+    if(part.axis3d){
+      const direction=new THREE.Vector3(b.x-a.x,b.y-a.y,b.z-a.z).normalize();
+      const reference=Math.abs(direction.y)>0.999?new THREE.Vector3(0,0,1):new THREE.Vector3(0,1,0);
+      const u=new THREE.Vector3().crossVectors(reference,direction).normalize();
+      const v=new THREE.Vector3().crossVectors(direction,u).normalize();
+      const roll=(this.store.project.byId(part.objectId)?.roll||0)*Math.PI/180;
+      u.applyAxisAngle(direction,roll);v.applyAxisAngle(direction,roll);
+      const basis=new THREE.Matrix4().makeBasis(u,v,direction);basis.setPosition(a.x,a.y,a.z);geo.applyMatrix4(basis);
+    } else {
     const dir = G.norm(G.sub(b, a));
     const nrm = G.perp(dir);
     const basis = new THREE.Matrix4().makeBasis(
@@ -226,6 +242,7 @@ export class View3D {
     );
     basis.setPosition(a.x, a.y, 0);
     geo.applyMatrix4(basis);
+    }
 
     const mesh = new THREE.Mesh(geo, this.materialFor(part, mat.color || '#7d8b99'));
     mesh.userData = { objectId: part.objectId, partKey: part.key, baseColor: mat.color || '#7d8b99' };
@@ -248,7 +265,8 @@ export class View3D {
     const mat = store.project.material(part.materialId, store.library);
     const th = part.thickness || 6;
 
-    const shape = new THREE.Shape(obj.points.map((q) => new THREE.Vector2(q.x, q.y)));
+    const points=part.plate3d?[[-1,-1],[1,-1],[1,1],[-1,1]].map(([x,y])=>({x:x*part.width/2,y:y*part.height/2})):obj.points;
+    const shape = new THREE.Shape(points.map((q) => new THREE.Vector2(q.x, q.y)));
     for (const h of obj.holes || []) {
       const path = new THREE.Path();
       if (h.kind === 'circle') {
@@ -270,7 +288,7 @@ export class View3D {
     }
 
     const geo = new THREE.ExtrudeGeometry(shape, { depth: th, bevelEnabled: false, curveSegments: 20 });
-    geo.translate(0, 0, -th / 2);
+    if(part.plate3d){const f=part.plate3d,v=q=>new THREE.Vector3(q.x,q.y,q.z),matrix=new THREE.Matrix4().makeBasis(v(f.u),v(f.v),v(f.normal));matrix.setPosition(v(f.origin));geo.applyMatrix4(matrix);}else geo.translate(0, 0, -th / 2);
     const mesh = new THREE.Mesh(geo, this.materialFor(part, mat?.color || '#98a1ab'));
     mesh.userData = { objectId: part.objectId, partKey: part.key, baseColor: mat?.color || '#98a1ab' };
     this.root.add(mesh);
@@ -368,6 +386,8 @@ export class View3D {
 
   /** Kliknutí v 3D vybere stejný prvek ve 2D, vlastnostech i kusovníku (FR-3D-004). */
   pick(e) {
+    if(this.pointerStart&&Math.hypot(e.clientX-this.pointerStart.x,e.clientY-this.pointerStart.y)>5)return;
+    if(this.onModelClick?.(e))return;
     const rect = this.canvas.getBoundingClientRect();
     const ndc = new THREE.Vector2(
       ((e.clientX - rect.left) / rect.width) * 2 - 1,
@@ -382,7 +402,7 @@ export class View3D {
       return;
     }
     const ud = hits[0].object.userData;
-    this.store.select(ud.objectId);
+    if(e.shiftKey)this.store.toggleSelect(ud.objectId);else this.store.select(ud.objectId);
     if (ud.partKey) this.store.setHighlightPart(ud.partKey);
     this.opts.onPick?.(ud);
   }

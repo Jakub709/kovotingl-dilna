@@ -23,6 +23,7 @@ const esc = (s) =>
 
 /** Vodorovné posunutí horní/dolní hrany na jednom konci dílu. */
 function slantOf(cut, atStart) {
+  if(cut?.spatial)return {top:0,bottom:0};
   const dev = deviationOf(cut);
   if (Math.abs(dev) < 0.05) return { top: 0, bottom: 0 };
   const o = cut.orient || 0;
@@ -121,8 +122,8 @@ export function barSVG(bar, plan, opts = {}) {
     }
 
     // Úhly pod konci dílu.
-    const aTxt = fmtAngle(piece.part.cutL.angle, 1);
-    const bTxt = fmtAngle(piece.part.cutR.angle, 1);
+    const aTxt = piece.part.axis3d ? '3D detail' : fmtAngle(piece.part.cutL.angle, 1);
+    const bTxt = piece.part.axis3d ? '3D detail' : fmtAngle(piece.part.cutR.angle, 1);
     angles.push(
       `<text x="${round(x0 + 1)}" y="${BAR_BOT + 14}" font-size="11" text-anchor="start" fill="${
         deviationOf(piece.part.cutL) ? '#b5761a' : '#5d6b7a'
@@ -189,6 +190,7 @@ export function barSVG(bar, plan, opts = {}) {
  * Sklon musí souhlasit s kresbou tyče – proto vychází ze stejné funkce slantOf.
  */
 export function cutGlyph(cut, side = 'left') {
+  if(cut?.spatial)return '3D · ';
   const s = slantOf(cut, side === 'left');
   const scale = 4 / SLANT;
   const d =
@@ -231,9 +233,9 @@ export function pieceDetailSVG(part) {
     <text x="${x0 - 4}" y="12" font-size="11" text-anchor="end" fill="#5d6b7a">levý</text>
     <text x="${x1 + 4}" y="12" font-size="11" text-anchor="start" fill="#5d6b7a">pravý</text>
     <text x="${x0 - 4}" y="${bot + 14}" font-size="12" font-weight="600" text-anchor="end"
-      fill="#1c2530">${fmtAngle(part.cutL.angle, 1)}</text>
+      fill="#1c2530">${part.axis3d?'3D detail':fmtAngle(part.cutL.angle, 1)}</text>
     <text x="${x1 + 4}" y="${bot + 14}" font-size="12" font-weight="600" text-anchor="start"
-      fill="#1c2530">${fmtAngle(part.cutR.angle, 1)}</text>
+      fill="#1c2530">${part.axis3d?'3D detail':fmtAngle(part.cutR.angle, 1)}</text>
     <text x="${w / 2}" y="${bot + 14}" font-size="11" text-anchor="middle" fill="#5d6b7a">${fmtLen(
     part.length
   )} mm</text>

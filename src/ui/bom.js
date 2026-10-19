@@ -124,6 +124,8 @@ function dimensionText(r) {
 }
 
 function cutCell(r, side) {
+  if(r.productionReady===false)return 'Neurčeno';
+  if(r.axis3d)return '3D · viz detail';
   if (r.kind !== 'profil') return '–';
   const cut = side === 'L' ? r.cutL : r.cutR;
   return `<span class="cutcell">${cutGlyph(cut, side === 'L' ? 'left' : 'right')}${fmtAngle(cut.angle, 1)}</span>`;

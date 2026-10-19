@@ -22,6 +22,7 @@ export class CutView {
   render() {
     const plans = this.store.derived.plans;
     if (!plans.length) {
+      if(this.store.project.objects.some(o=>o.type==='member3d')){this.el.innerHTML='<div class="empty">3D konstrukce je zatím návrh s osovými délkami.<br>Nářez bude dostupný po doplnění prostorových spojů a výrobních řezů.</div>';return;}
       this.el.innerHTML =
         '<div class="empty">Nářezový plán se vytvoří, jakmile budou v projektu profilové díly s materiálem.<br>' +
         'Plechy a pletivo se z tyčí neřežou, proto zde nejsou.</div>';

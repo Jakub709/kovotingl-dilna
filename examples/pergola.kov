@@ -1,0 +1,386 @@
+{
+  "kind": "kovotingl-project",
+  "formatVersion": 3,
+  "id": "prj_ri0le0d",
+  "name": "Pergola s vazbami",
+  "customer": "",
+  "note": "",
+  "units": "mm",
+  "created": "2026-10-15T16:37:28.322Z",
+  "modified": "2026-10-15T16:37:28.322Z",
+  "settings": {
+    "kerf": 3,
+    "gridStep": 10,
+    "snap": true,
+    "showGrid": true,
+    "showDims": true,
+    "showRef": true,
+    "profileFillMode": "count",
+    "lengthDecimals": 0,
+    "mergeIdentical": true,
+    "autoValidate": true,
+    "sharedMiter": false
+  },
+  "assemblies": [
+    {
+      "id": "as_ri0le0e",
+      "name": "Pergola",
+      "visible": true,
+      "locked": false
+    }
+  ],
+  "objects": [
+    {
+      "id": "m3_ri0le0h",
+      "type": "member3d",
+      "start": "nd_ri0le0f",
+      "end": "nd_ri0le0g",
+      "name": "Sloup",
+      "materialId": "m_jekl_40_40_2",
+      "roll": 0,
+      "assemblyId": "as_ri0le0e",
+      "visible": true,
+      "locked": false,
+      "note": "",
+      "jointMode": "unresolved"
+    },
+    {
+      "id": "m3_ri0lf0k",
+      "type": "member3d",
+      "start": "nd_ri0lf0i",
+      "end": "nd_ri0lf0j",
+      "name": "Sloup",
+      "materialId": "m_jekl_40_40_2",
+      "roll": 0,
+      "assemblyId": "as_ri0le0e",
+      "visible": true,
+      "locked": false,
+      "note": "",
+      "jointMode": "unresolved"
+    },
+    {
+      "id": "m3_ri0lf0n",
+      "type": "member3d",
+      "start": "nd_ri0lf0l",
+      "end": "nd_ri0lf0m",
+      "name": "Sloup",
+      "materialId": "m_jekl_40_40_2",
+      "roll": 0,
+      "assemblyId": "as_ri0le0e",
+      "visible": true,
+      "locked": false,
+      "note": "",
+      "jointMode": "unresolved"
+    },
+    {
+      "id": "m3_ri0lf0q",
+      "type": "member3d",
+      "start": "nd_ri0lf0o",
+      "end": "nd_ri0lf0p",
+      "name": "Sloup",
+      "materialId": "m_jekl_40_40_2",
+      "roll": 0,
+      "assemblyId": "as_ri0le0e",
+      "visible": true,
+      "locked": false,
+      "note": "",
+      "jointMode": "unresolved"
+    },
+    {
+      "id": "m3_ri0lf0r",
+      "type": "member3d",
+      "start": "nd_ri0le0g",
+      "end": "nd_ri0lf0m",
+      "name": "Nosník",
+      "materialId": "m_jekl_40_40_2",
+      "roll": 0,
+      "assemblyId": "as_ri0le0e",
+      "visible": true,
+      "locked": false,
+      "note": "",
+      "jointMode": "unresolved"
+    },
+    {
+      "id": "m3_ri0lf0s",
+      "type": "member3d",
+      "start": "nd_ri0lf0j",
+      "end": "nd_ri0lf0p",
+      "name": "Nosník",
+      "materialId": "m_jekl_40_40_2",
+      "roll": 0,
+      "assemblyId": "as_ri0le0e",
+      "visible": true,
+      "locked": false,
+      "note": "",
+      "jointMode": "unresolved"
+    },
+    {
+      "id": "m3_ri0lf0t",
+      "type": "member3d",
+      "start": "nd_ri0le0g",
+      "end": "nd_ri0lf0j",
+      "name": "Krokev",
+      "materialId": "m_jekl_40_40_2",
+      "roll": 0,
+      "assemblyId": "as_ri0le0e",
+      "visible": true,
+      "locked": false,
+      "note": "",
+      "jointMode": "unresolved"
+    },
+    {
+      "id": "m3_ri0lf0w",
+      "type": "member3d",
+      "start": "nd_ri0lf0u",
+      "end": "nd_ri0lf0v",
+      "name": "Krokev",
+      "materialId": "m_jekl_40_40_2",
+      "roll": 0,
+      "assemblyId": "as_ri0le0e",
+      "visible": true,
+      "locked": false,
+      "note": "",
+      "jointMode": "unresolved"
+    },
+    {
+      "id": "m3_ri0lf0z",
+      "type": "member3d",
+      "start": "nd_ri0lf0x",
+      "end": "nd_ri0lf0y",
+      "name": "Krokev",
+      "materialId": "m_jekl_40_40_2",
+      "roll": 0,
+      "assemblyId": "as_ri0le0e",
+      "visible": true,
+      "locked": false,
+      "note": "",
+      "jointMode": "unresolved"
+    },
+    {
+      "id": "m3_ri0lf12",
+      "type": "member3d",
+      "start": "nd_ri0lf10",
+      "end": "nd_ri0lf11",
+      "name": "Krokev",
+      "materialId": "m_jekl_40_40_2",
+      "roll": 0,
+      "assemblyId": "as_ri0le0e",
+      "visible": true,
+      "locked": false,
+      "note": "",
+      "jointMode": "unresolved"
+    },
+    {
+      "id": "m3_ri0lf15",
+      "type": "member3d",
+      "start": "nd_ri0lf13",
+      "end": "nd_ri0lf14",
+      "name": "Krokev",
+      "materialId": "m_jekl_40_40_2",
+      "roll": 0,
+      "assemblyId": "as_ri0le0e",
+      "visible": true,
+      "locked": false,
+      "note": "",
+      "jointMode": "unresolved"
+    },
+    {
+      "id": "m3_ri0lf18",
+      "type": "member3d",
+      "start": "nd_ri0lf16",
+      "end": "nd_ri0lf17",
+      "name": "Krokev",
+      "materialId": "m_jekl_40_40_2",
+      "roll": 0,
+      "assemblyId": "as_ri0le0e",
+      "visible": true,
+      "locked": false,
+      "note": "",
+      "jointMode": "unresolved"
+    },
+    {
+      "id": "m3_ri0lf19",
+      "type": "member3d",
+      "start": "nd_ri0lf0m",
+      "end": "nd_ri0lf0p",
+      "name": "Krokev",
+      "materialId": "m_jekl_40_40_2",
+      "roll": 0,
+      "assemblyId": "as_ri0le0e",
+      "visible": true,
+      "locked": false,
+      "note": "",
+      "jointMode": "unresolved"
+    }
+  ],
+  "nodes3d": [
+    {
+      "id": "nd_ri0le0f",
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    {
+      "id": "nd_ri0le0g",
+      "x": 0,
+      "y": 2400,
+      "z": 0
+    },
+    {
+      "id": "nd_ri0lf0i",
+      "x": 0,
+      "y": 0,
+      "z": 3000
+    },
+    {
+      "id": "nd_ri0lf0j",
+      "x": 0,
+      "y": 2700,
+      "z": 3000
+    },
+    {
+      "id": "nd_ri0lf0l",
+      "x": 4000,
+      "y": 0,
+      "z": 0
+    },
+    {
+      "id": "nd_ri0lf0m",
+      "x": 4000,
+      "y": 2400,
+      "z": 0
+    },
+    {
+      "id": "nd_ri0lf0o",
+      "x": 4000,
+      "y": 0,
+      "z": 3000
+    },
+    {
+      "id": "nd_ri0lf0p",
+      "x": 4000,
+      "y": 2700,
+      "z": 3000
+    },
+    {
+      "id": "nd_ri0lf0u",
+      "x": 666.6666666666666,
+      "y": 2400,
+      "z": 0,
+      "binding": {
+        "memberId": "m3_ri0lf0r",
+        "t": 0.16666666666666666
+      }
+    },
+    {
+      "id": "nd_ri0lf0v",
+      "x": 666.6666666666666,
+      "y": 2700,
+      "z": 3000,
+      "binding": {
+        "memberId": "m3_ri0lf0s",
+        "t": 0.16666666666666666
+      }
+    },
+    {
+      "id": "nd_ri0lf0x",
+      "x": 1333.3333333333333,
+      "y": 2400,
+      "z": 0,
+      "binding": {
+        "memberId": "m3_ri0lf0r",
+        "t": 0.3333333333333333
+      }
+    },
+    {
+      "id": "nd_ri0lf0y",
+      "x": 1333.3333333333333,
+      "y": 2700,
+      "z": 3000,
+      "binding": {
+        "memberId": "m3_ri0lf0s",
+        "t": 0.3333333333333333
+      }
+    },
+    {
+      "id": "nd_ri0lf10",
+      "x": 2000,
+      "y": 2400,
+      "z": 0,
+      "binding": {
+        "memberId": "m3_ri0lf0r",
+        "t": 0.5
+      }
+    },
+    {
+      "id": "nd_ri0lf11",
+      "x": 2000,
+      "y": 2700,
+      "z": 3000,
+      "binding": {
+        "memberId": "m3_ri0lf0s",
+        "t": 0.5
+      }
+    },
+    {
+      "id": "nd_ri0lf13",
+      "x": 2666.6666666666665,
+      "y": 2400,
+      "z": 0,
+      "binding": {
+        "memberId": "m3_ri0lf0r",
+        "t": 0.6666666666666666
+      }
+    },
+    {
+      "id": "nd_ri0lf14",
+      "x": 2666.6666666666665,
+      "y": 2700,
+      "z": 3000,
+      "binding": {
+        "memberId": "m3_ri0lf0s",
+        "t": 0.6666666666666666
+      }
+    },
+    {
+      "id": "nd_ri0lf16",
+      "x": 3333.3333333333335,
+      "y": 2400,
+      "z": 0,
+      "binding": {
+        "memberId": "m3_ri0lf0r",
+        "t": 0.8333333333333334
+      }
+    },
+    {
+      "id": "nd_ri0lf17",
+      "x": 3333.3333333333335,
+      "y": 2700,
+      "z": 3000,
+      "binding": {
+        "memberId": "m3_ri0lf0s",
+        "t": 0.8333333333333334
+      }
+    }
+  ],
+  "materials": {
+    "m_jekl_40_40_2": {
+      "id": "m_jekl_40_40_2",
+      "name": "Jekl 40×40×2",
+      "category": "jekl_ctverec",
+      "dims": {
+        "a": 40,
+        "b": null,
+        "d": null,
+        "t": 2
+      },
+      "stockLength": 6000,
+      "color": "#6b7f96",
+      "active": true,
+      "note": "",
+      "builtin": true
+    }
+  },
+  "cutLocks": {},
+  "partNames": {}
+}

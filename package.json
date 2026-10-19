@@ -1,7 +1,7 @@
 {
   "name": "kovotingl-dilna",
   "productName": "KovoTingl Dilna",
-  "version": "0.1.0",
+  "version": "0.4.0",
   "description": "Jednoduché kreslení konstrukcí, kusovník a nářez pro dílnu.",
   "author": "KovoTingl",
   "private": true,
@@ -9,17 +9,31 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "test": "node tools/test-core.mjs && node --test tools/regressions.mjs",
+    "test": "node tools/test-core.mjs && node --test tools/regressions.mjs tools/spatial.test.mjs tools/fabrication.test.mjs tools/solids.test.mjs",
     "dist": "electron-builder --win --dir",
     "dist:portable": "electron-builder --win portable"
   },
-  "devDependencies": {"electron": "33.4.11", "electron-builder": "26.15.3"},
+  "devDependencies": {
+    "electron": "33.4.11",
+    "electron-builder": "26.15.3"
+  },
   "build": {
     "appId": "cz.kovotingl.dilna",
     "productName": "KovoTingl Dilna",
-    "directories": {"output": "dist", "buildResources": "build"},
-    "files": ["main.js", "preload.js", "src/**/*", "build/icon.png"],
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "src/**/*",
+      "build/icon.png"
+    ],
     "artifactName": "KovoTingl-Dilna-${version}.${ext}",
-    "win": {"icon": "build/icon.ico", "target": "portable"}
+    "win": {
+      "icon": "build/icon.ico",
+      "target": "portable"
+    }
   }
 }

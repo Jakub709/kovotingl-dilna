@@ -1,0 +1,887 @@
+{
+  "kind": "kovotingl-project",
+  "formatVersion": 4,
+  "id": "prj_1z85r01",
+  "name": "Svařovaná pergola s patkami",
+  "customer": "",
+  "note": "",
+  "units": "mm",
+  "created": "2026-10-19T09:29:38.319Z",
+  "modified": "2026-10-19T09:29:38.319Z",
+  "settings": {
+    "kerf": 3,
+    "gridStep": 10,
+    "snap": true,
+    "showGrid": true,
+    "showDims": true,
+    "showRef": true,
+    "profileFillMode": "count",
+    "lengthDecimals": 0,
+    "mergeIdentical": true,
+    "autoValidate": true,
+    "sharedMiter": false
+  },
+  "assemblies": [
+    {
+      "id": "as_1z86502",
+      "name": "Svařovaná pergola",
+      "visible": true,
+      "locked": false,
+      "note": ""
+    }
+  ],
+  "objects": [
+    {
+      "id": "m3_1z86605",
+      "type": "member3d",
+      "start": "nd_1z86603",
+      "end": "nd_1z86604",
+      "name": "Nosník 1",
+      "materialId": "m_jekl_80_80_4",
+      "roll": 0,
+      "assemblyId": "as_1z86502",
+      "visible": true,
+      "locked": false,
+      "note": "",
+      "jointMode": "unresolved",
+      "ends": {
+        "start": {
+          "kind": "square"
+        },
+        "end": {
+          "kind": "square"
+        }
+      }
+    },
+    {
+      "id": "m3_1z86608",
+      "type": "member3d",
+      "start": "nd_1z86606",
+      "end": "nd_1z86607",
+      "name": "Nosník 2",
+      "materialId": "m_jekl_80_80_4",
+      "roll": 0,
+      "assemblyId": "as_1z86502",
+      "visible": true,
+      "locked": false,
+      "note": "",
+      "jointMode": "unresolved",
+      "ends": {
+        "start": {
+          "kind": "square"
+        },
+        "end": {
+          "kind": "square"
+        }
+      }
+    },
+    {
+      "id": "m3_1z8660b",
+      "type": "member3d",
+      "start": "nd_1z86609",
+      "end": "nd_1z8660a",
+      "name": "Sloup 1",
+      "materialId": "m_jekl_80_80_4",
+      "roll": 0,
+      "assemblyId": "as_1z86502",
+      "visible": true,
+      "locked": false,
+      "note": "",
+      "jointMode": "unresolved",
+      "ends": {
+        "start": {
+          "kind": "square"
+        },
+        "end": {
+          "kind": "butt",
+          "targetId": "m3_1z86605",
+          "axis": "v",
+          "sign": -1,
+          "gap": 1
+        }
+      }
+    },
+    {
+      "id": "m3_1z8660e",
+      "type": "member3d",
+      "start": "nd_1z8660c",
+      "end": "nd_1z8660d",
+      "name": "Sloup 2",
+      "materialId": "m_jekl_80_80_4",
+      "roll": 0,
+      "assemblyId": "as_1z86502",
+      "visible": true,
+      "locked": false,
+      "note": "",
+      "jointMode": "unresolved",
+      "ends": {
+        "start": {
+          "kind": "square"
+        },
+        "end": {
+          "kind": "butt",
+          "targetId": "m3_1z86608",
+          "axis": "v",
+          "sign": -1,
+          "gap": 1
+        }
+      }
+    },
+    {
+      "id": "m3_1z8660h",
+      "type": "member3d",
+      "start": "nd_1z8660f",
+      "end": "nd_1z8660g",
+      "name": "Sloup 3",
+      "materialId": "m_jekl_80_80_4",
+      "roll": 0,
+      "assemblyId": "as_1z86502",
+      "visible": true,
+      "locked": false,
+      "note": "",
+      "jointMode": "unresolved",
+      "ends": {
+        "start": {
+          "kind": "square"
+        },
+        "end": {
+          "kind": "butt",
+          "targetId": "m3_1z86605",
+          "axis": "v",
+          "sign": -1,
+          "gap": 1
+        }
+      }
+    },
+    {
+      "id": "m3_1z8660k",
+      "type": "member3d",
+      "start": "nd_1z8660i",
+      "end": "nd_1z8660j",
+      "name": "Sloup 4",
+      "materialId": "m_jekl_80_80_4",
+      "roll": 0,
+      "assemblyId": "as_1z86502",
+      "visible": true,
+      "locked": false,
+      "note": "",
+      "jointMode": "unresolved",
+      "ends": {
+        "start": {
+          "kind": "square"
+        },
+        "end": {
+          "kind": "butt",
+          "targetId": "m3_1z86608",
+          "axis": "v",
+          "sign": -1,
+          "gap": 1
+        }
+      }
+    },
+    {
+      "id": "m3_1z8660l",
+      "type": "member3d",
+      "start": "nd_1z8660a",
+      "end": "nd_1z8660d",
+      "name": "Krokev 1",
+      "materialId": "m_jekl_40_40_2",
+      "roll": 0,
+      "assemblyId": "as_1z86502",
+      "visible": true,
+      "locked": false,
+      "note": "",
+      "jointMode": "unresolved",
+      "ends": {
+        "start": {
+          "kind": "butt",
+          "targetId": "m3_1z86605",
+          "axis": "u",
+          "sign": -1,
+          "gap": 1
+        },
+        "end": {
+          "kind": "butt",
+          "targetId": "m3_1z86608",
+          "axis": "u",
+          "sign": 1,
+          "gap": 1
+        }
+      }
+    },
+    {
+      "id": "m3_1z8670o",
+      "type": "member3d",
+      "start": "nd_1z8670m",
+      "end": "nd_1z8670n",
+      "name": "Krokev 2",
+      "materialId": "m_jekl_40_40_2",
+      "roll": 0,
+      "assemblyId": "as_1z86502",
+      "visible": true,
+      "locked": false,
+      "note": "",
+      "jointMode": "unresolved",
+      "ends": {
+        "start": {
+          "kind": "butt",
+          "targetId": "m3_1z86605",
+          "axis": "u",
+          "sign": -1,
+          "gap": 1
+        },
+        "end": {
+          "kind": "butt",
+          "targetId": "m3_1z86608",
+          "axis": "u",
+          "sign": 1,
+          "gap": 1
+        }
+      }
+    },
+    {
+      "id": "m3_1z8670r",
+      "type": "member3d",
+      "start": "nd_1z8670p",
+      "end": "nd_1z8670q",
+      "name": "Krokev 3",
+      "materialId": "m_jekl_40_40_2",
+      "roll": 0,
+      "assemblyId": "as_1z86502",
+      "visible": true,
+      "locked": false,
+      "note": "",
+      "jointMode": "unresolved",
+      "ends": {
+        "start": {
+          "kind": "butt",
+          "targetId": "m3_1z86605",
+          "axis": "u",
+          "sign": -1,
+          "gap": 1
+        },
+        "end": {
+          "kind": "butt",
+          "targetId": "m3_1z86608",
+          "axis": "u",
+          "sign": 1,
+          "gap": 1
+        }
+      }
+    },
+    {
+      "id": "m3_1z8670u",
+      "type": "member3d",
+      "start": "nd_1z8670s",
+      "end": "nd_1z8670t",
+      "name": "Krokev 4",
+      "materialId": "m_jekl_40_40_2",
+      "roll": 0,
+      "assemblyId": "as_1z86502",
+      "visible": true,
+      "locked": false,
+      "note": "",
+      "jointMode": "unresolved",
+      "ends": {
+        "start": {
+          "kind": "butt",
+          "targetId": "m3_1z86605",
+          "axis": "u",
+          "sign": -1,
+          "gap": 1
+        },
+        "end": {
+          "kind": "butt",
+          "targetId": "m3_1z86608",
+          "axis": "u",
+          "sign": 1,
+          "gap": 1
+        }
+      }
+    },
+    {
+      "id": "m3_1z8670x",
+      "type": "member3d",
+      "start": "nd_1z8670v",
+      "end": "nd_1z8670w",
+      "name": "Krokev 5",
+      "materialId": "m_jekl_40_40_2",
+      "roll": 0,
+      "assemblyId": "as_1z86502",
+      "visible": true,
+      "locked": false,
+      "note": "",
+      "jointMode": "unresolved",
+      "ends": {
+        "start": {
+          "kind": "butt",
+          "targetId": "m3_1z86605",
+          "axis": "u",
+          "sign": -1,
+          "gap": 1
+        },
+        "end": {
+          "kind": "butt",
+          "targetId": "m3_1z86608",
+          "axis": "u",
+          "sign": 1,
+          "gap": 1
+        }
+      }
+    },
+    {
+      "id": "m3_1z86710",
+      "type": "member3d",
+      "start": "nd_1z8670y",
+      "end": "nd_1z8670z",
+      "name": "Krokev 6",
+      "materialId": "m_jekl_40_40_2",
+      "roll": 0,
+      "assemblyId": "as_1z86502",
+      "visible": true,
+      "locked": false,
+      "note": "",
+      "jointMode": "unresolved",
+      "ends": {
+        "start": {
+          "kind": "butt",
+          "targetId": "m3_1z86605",
+          "axis": "u",
+          "sign": -1,
+          "gap": 1
+        },
+        "end": {
+          "kind": "butt",
+          "targetId": "m3_1z86608",
+          "axis": "u",
+          "sign": 1,
+          "gap": 1
+        }
+      }
+    },
+    {
+      "id": "m3_1z86711",
+      "type": "member3d",
+      "start": "nd_1z8660g",
+      "end": "nd_1z8660j",
+      "name": "Krokev 7",
+      "materialId": "m_jekl_40_40_2",
+      "roll": 0,
+      "assemblyId": "as_1z86502",
+      "visible": true,
+      "locked": false,
+      "note": "",
+      "jointMode": "unresolved",
+      "ends": {
+        "start": {
+          "kind": "butt",
+          "targetId": "m3_1z86605",
+          "axis": "u",
+          "sign": -1,
+          "gap": 1
+        },
+        "end": {
+          "kind": "butt",
+          "targetId": "m3_1z86608",
+          "axis": "u",
+          "sign": 1,
+          "gap": 1
+        }
+      }
+    },
+    {
+      "id": "p3_1z86f16",
+      "type": "plate3d",
+      "name": "Patka – Sloup 1",
+      "visible": true,
+      "locked": false,
+      "note": "",
+      "assemblyId": "as_1z86502",
+      "materialId": "m_plech_8_mm",
+      "width": 180,
+      "height": 180,
+      "thickness": 8,
+      "origin": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "u": {
+        "x": 1,
+        "y": 0,
+        "z": 0
+      },
+      "v": {
+        "x": 0,
+        "y": 0,
+        "z": 1
+      },
+      "holes": [
+        {
+          "id": "h_1z86f12",
+          "kind": "circle",
+          "cx": -65,
+          "cy": -65,
+          "d": 14
+        },
+        {
+          "id": "h_1z86f13",
+          "kind": "circle",
+          "cx": 65,
+          "cy": -65,
+          "d": 14
+        },
+        {
+          "id": "h_1z86f14",
+          "kind": "circle",
+          "cx": 65,
+          "cy": 65,
+          "d": 14
+        },
+        {
+          "id": "h_1z86f15",
+          "kind": "circle",
+          "cx": -65,
+          "cy": 65,
+          "d": 14
+        }
+      ],
+      "attachment": {
+        "memberId": "m3_1z8660b",
+        "end": "start",
+        "gap": 0
+      }
+    },
+    {
+      "id": "p3_1z86f1b",
+      "type": "plate3d",
+      "name": "Patka – Sloup 2",
+      "visible": true,
+      "locked": false,
+      "note": "",
+      "assemblyId": "as_1z86502",
+      "materialId": "m_plech_8_mm",
+      "width": 180,
+      "height": 180,
+      "thickness": 8,
+      "origin": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "u": {
+        "x": 1,
+        "y": 0,
+        "z": 0
+      },
+      "v": {
+        "x": 0,
+        "y": 0,
+        "z": 1
+      },
+      "holes": [
+        {
+          "id": "h_1z86f17",
+          "kind": "circle",
+          "cx": -65,
+          "cy": -65,
+          "d": 14
+        },
+        {
+          "id": "h_1z86f18",
+          "kind": "circle",
+          "cx": 65,
+          "cy": -65,
+          "d": 14
+        },
+        {
+          "id": "h_1z86f19",
+          "kind": "circle",
+          "cx": 65,
+          "cy": 65,
+          "d": 14
+        },
+        {
+          "id": "h_1z86f1a",
+          "kind": "circle",
+          "cx": -65,
+          "cy": 65,
+          "d": 14
+        }
+      ],
+      "attachment": {
+        "memberId": "m3_1z8660e",
+        "end": "start",
+        "gap": 0
+      }
+    },
+    {
+      "id": "p3_1z86f1g",
+      "type": "plate3d",
+      "name": "Patka – Sloup 3",
+      "visible": true,
+      "locked": false,
+      "note": "",
+      "assemblyId": "as_1z86502",
+      "materialId": "m_plech_8_mm",
+      "width": 180,
+      "height": 180,
+      "thickness": 8,
+      "origin": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "u": {
+        "x": 1,
+        "y": 0,
+        "z": 0
+      },
+      "v": {
+        "x": 0,
+        "y": 0,
+        "z": 1
+      },
+      "holes": [
+        {
+          "id": "h_1z86f1c",
+          "kind": "circle",
+          "cx": -65,
+          "cy": -65,
+          "d": 14
+        },
+        {
+          "id": "h_1z86f1d",
+          "kind": "circle",
+          "cx": 65,
+          "cy": -65,
+          "d": 14
+        },
+        {
+          "id": "h_1z86f1e",
+          "kind": "circle",
+          "cx": 65,
+          "cy": 65,
+          "d": 14
+        },
+        {
+          "id": "h_1z86f1f",
+          "kind": "circle",
+          "cx": -65,
+          "cy": 65,
+          "d": 14
+        }
+      ],
+      "attachment": {
+        "memberId": "m3_1z8660h",
+        "end": "start",
+        "gap": 0
+      }
+    },
+    {
+      "id": "p3_1z86f1l",
+      "type": "plate3d",
+      "name": "Patka – Sloup 4",
+      "visible": true,
+      "locked": false,
+      "note": "",
+      "assemblyId": "as_1z86502",
+      "materialId": "m_plech_8_mm",
+      "width": 180,
+      "height": 180,
+      "thickness": 8,
+      "origin": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "u": {
+        "x": 1,
+        "y": 0,
+        "z": 0
+      },
+      "v": {
+        "x": 0,
+        "y": 0,
+        "z": 1
+      },
+      "holes": [
+        {
+          "id": "h_1z86f1h",
+          "kind": "circle",
+          "cx": -65,
+          "cy": -65,
+          "d": 14
+        },
+        {
+          "id": "h_1z86f1i",
+          "kind": "circle",
+          "cx": 65,
+          "cy": -65,
+          "d": 14
+        },
+        {
+          "id": "h_1z86f1j",
+          "kind": "circle",
+          "cx": 65,
+          "cy": 65,
+          "d": 14
+        },
+        {
+          "id": "h_1z86f1k",
+          "kind": "circle",
+          "cx": -65,
+          "cy": 65,
+          "d": 14
+        }
+      ],
+      "attachment": {
+        "memberId": "m3_1z8660k",
+        "end": "start",
+        "gap": 0
+      }
+    }
+  ],
+  "nodes3d": [
+    {
+      "id": "nd_1z86603",
+      "x": -41,
+      "y": 2400,
+      "z": 0
+    },
+    {
+      "id": "nd_1z86604",
+      "x": 4041,
+      "y": 2400,
+      "z": 0
+    },
+    {
+      "id": "nd_1z86606",
+      "x": -41,
+      "y": 2700,
+      "z": 3000
+    },
+    {
+      "id": "nd_1z86607",
+      "x": 4041,
+      "y": 2700,
+      "z": 3000
+    },
+    {
+      "id": "nd_1z86609",
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    {
+      "id": "nd_1z8660a",
+      "x": 0,
+      "y": 2400,
+      "z": 0,
+      "binding": {
+        "memberId": "m3_1z86605",
+        "t": 0.010044096031357178
+      }
+    },
+    {
+      "id": "nd_1z8660c",
+      "x": 0,
+      "y": 0,
+      "z": 3000
+    },
+    {
+      "id": "nd_1z8660d",
+      "x": 0,
+      "y": 2700,
+      "z": 3000,
+      "binding": {
+        "memberId": "m3_1z86608",
+        "t": 0.010044096031357178
+      }
+    },
+    {
+      "id": "nd_1z8660f",
+      "x": 4000,
+      "y": 0,
+      "z": 0
+    },
+    {
+      "id": "nd_1z8660g",
+      "x": 4000,
+      "y": 2400,
+      "z": 0,
+      "binding": {
+        "memberId": "m3_1z86605",
+        "t": 0.9899559039686429
+      }
+    },
+    {
+      "id": "nd_1z8660i",
+      "x": 4000,
+      "y": 0,
+      "z": 3000
+    },
+    {
+      "id": "nd_1z8660j",
+      "x": 4000,
+      "y": 2700,
+      "z": 3000,
+      "binding": {
+        "memberId": "m3_1z86608",
+        "t": 0.9899559039686429
+      }
+    },
+    {
+      "id": "nd_1z8670m",
+      "x": 666.6666666666666,
+      "y": 2400,
+      "z": 0,
+      "binding": {
+        "memberId": "m3_1z86605",
+        "t": 0.17336273068757144
+      }
+    },
+    {
+      "id": "nd_1z8670n",
+      "x": 666.6666666666666,
+      "y": 2700,
+      "z": 3000,
+      "binding": {
+        "memberId": "m3_1z86608",
+        "t": 0.17336273068757144
+      }
+    },
+    {
+      "id": "nd_1z8670p",
+      "x": 1333.3333333333333,
+      "y": 2400,
+      "z": 0,
+      "binding": {
+        "memberId": "m3_1z86605",
+        "t": 0.33668136534378573
+      }
+    },
+    {
+      "id": "nd_1z8670q",
+      "x": 1333.3333333333333,
+      "y": 2700,
+      "z": 3000,
+      "binding": {
+        "memberId": "m3_1z86608",
+        "t": 0.33668136534378573
+      }
+    },
+    {
+      "id": "nd_1z8670s",
+      "x": 2000,
+      "y": 2400,
+      "z": 0,
+      "binding": {
+        "memberId": "m3_1z86605",
+        "t": 0.5
+      }
+    },
+    {
+      "id": "nd_1z8670t",
+      "x": 2000,
+      "y": 2700,
+      "z": 3000,
+      "binding": {
+        "memberId": "m3_1z86608",
+        "t": 0.5
+      }
+    },
+    {
+      "id": "nd_1z8670v",
+      "x": 2666.6666666666665,
+      "y": 2400,
+      "z": 0,
+      "binding": {
+        "memberId": "m3_1z86605",
+        "t": 0.6633186346562142
+      }
+    },
+    {
+      "id": "nd_1z8670w",
+      "x": 2666.6666666666665,
+      "y": 2700,
+      "z": 3000,
+      "binding": {
+        "memberId": "m3_1z86608",
+        "t": 0.6633186346562142
+      }
+    },
+    {
+      "id": "nd_1z8670y",
+      "x": 3333.3333333333335,
+      "y": 2400,
+      "z": 0,
+      "binding": {
+        "memberId": "m3_1z86605",
+        "t": 0.8266372693124285
+      }
+    },
+    {
+      "id": "nd_1z8670z",
+      "x": 3333.3333333333335,
+      "y": 2700,
+      "z": 3000,
+      "binding": {
+        "memberId": "m3_1z86608",
+        "t": 0.8266372693124285
+      }
+    }
+  ],
+  "materials": {
+    "m_jekl_80_80_4": {
+      "id": "m_jekl_80_80_4",
+      "name": "Jekl 80×80×4",
+      "category": "jekl_ctverec",
+      "dims": {
+        "a": 80,
+        "b": null,
+        "d": null,
+        "t": 4
+      },
+      "stockLength": 6000,
+      "color": "#6b7f96",
+      "active": true,
+      "note": "",
+      "builtin": true
+    },
+    "m_jekl_40_40_2": {
+      "id": "m_jekl_40_40_2",
+      "name": "Jekl 40×40×2",
+      "category": "jekl_ctverec",
+      "dims": {
+        "a": 40,
+        "b": null,
+        "d": null,
+        "t": 2
+      },
+      "stockLength": 6000,
+      "color": "#6b7f96",
+      "active": true,
+      "note": "",
+      "builtin": true
+    },
+    "m_plech_8_mm": {
+      "id": "m_plech_8_mm",
+      "name": "Plech 8 mm",
+      "category": "plech",
+      "dims": {
+        "a": null,
+        "b": null,
+        "d": null,
+        "t": 8
+      },
+      "stockLength": 2000,
+      "color": "#98a1ab",
+      "active": true,
+      "note": "",
+      "builtin": true
+    }
+  },
+  "cutLocks": {},
+  "partNames": {}
+}

@@ -2,6 +2,7 @@
  * KovoTingl Dílna – propojení modelu, plátna, panelů a výstupů.
  */
 import { SimpleWorkspace } from './simple.js';
+import { SpatialEditor } from './spatial-editor.js';
 import { Store } from '../core/store.js';
 import { Project, makeAssembly, cloneObject, makeFill, makeMesh, objectBBox } from '../core/model.js';
 import { MaterialLibrary } from '../core/materials.js';
@@ -46,6 +47,7 @@ class App {
     this.store.subscribe(() => this.syncUI());
 
     this.simple = new SimpleWorkspace(this);
+    this.spatial = new SpatialEditor(this);
     this.ready = this.boot();
   }
 
@@ -125,6 +127,7 @@ class App {
     this.canvas.fit();
     this.startAutosave();
     this.simple.start();
+    if(this.store.project.objects.some(o=>['member3d','plate3d'].includes(o.type)))this.setMode('3d');
     this.syncUI();
 
     kt.onOpenFile?.((p) => this.openPath(p));
@@ -154,6 +157,7 @@ class App {
   newProject(silent = false) {
     const create = () => {
       this.store.setProject(new Project({ name: 'Nový projekt' }), null);
+      this.setMode('2d');
       this.canvas.fit();
       this.setTitle();
       if (!silent) this.toast('Nový projekt. Začni nástrojem Kreslení.', 'ok');
@@ -190,6 +194,7 @@ class App {
       this.store.setProject(project, filePath);
       this.canvas.fit();
       this.view3d.fit();
+      this.setMode(project.objects.some(o=>['member3d','plate3d'].includes(o.type))?'3d':'2d');
       this.setTitle();
       this.toast(`Projekt „${project.name}“ otevřen.`, 'ok');
     } catch (err) {
@@ -309,6 +314,7 @@ class App {
   /* ───────────────────────────────────────────── operace s prvky ──── */
 
   deleteSelection() {
+    if(this.store.selectedObjects().some(o=>['member3d','plate3d'].includes(o.type))){this.spatial.remove();return;}
     const ids = this.simple ? this.simple.operationObjects().map(o=>o.id) : [...this.store.selection];
     if (!ids.length) return;
     this.store.commit('Odstranění prvků', (p) => {
@@ -318,6 +324,7 @@ class App {
   }
 
   duplicateSelection() {
+    if(this.store.selectedObjects().some(o=>['member3d','plate3d'].includes(o.type))){this.setMode('3d');this.spatial.repeatDialog();return;}
     const objs = this.simple ? this.simple.operationObjects() : this.store.selectedObjects();
     if (!objs.length) return;
     const newIds = [];
@@ -683,6 +690,7 @@ class App {
     $('btn3d').classList.toggle('active', is3d);
     this.view3d.setEnabled(is3d);
     if (is3d) {
+      this.spatial?.activate();
       this.view3d.resize();
       if (!this._fitted3d) {
         this.view3d.fit();

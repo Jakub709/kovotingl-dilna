@@ -1,0 +1,191 @@
+{
+  "kind": "kovotingl-project",
+  "formatVersion": 3,
+  "id": "prj_ri0kj01",
+  "name": "Ukázka svařovaných spojů",
+  "customer": "",
+  "note": "",
+  "units": "mm",
+  "created": "2026-10-15T16:37:28.291Z",
+  "modified": "2026-10-15T16:37:28.291Z",
+  "settings": {
+    "kerf": 3,
+    "gridStep": 10,
+    "snap": true,
+    "showGrid": true,
+    "showDims": true,
+    "showRef": true,
+    "profileFillMode": "count",
+    "lengthDecimals": 0,
+    "mergeIdentical": true,
+    "autoValidate": true,
+    "sharedMiter": false
+  },
+  "assemblies": [],
+  "objects": [
+    {
+      "id": "m3_ri0ko04",
+      "type": "member3d",
+      "start": "nd_ri0ko02",
+      "end": "nd_ri0ko03",
+      "name": "Roh – vodorovný",
+      "materialId": "m_jekl_40_40_2",
+      "roll": 90,
+      "assemblyId": null,
+      "visible": true,
+      "locked": false,
+      "note": "",
+      "jointMode": "unresolved",
+      "ends": {
+        "start": {
+          "kind": "square"
+        },
+        "end": {
+          "kind": "miter",
+          "targetId": "m3_ri0ko06",
+          "targetEnd": "start"
+        }
+      }
+    },
+    {
+      "id": "m3_ri0ko06",
+      "type": "member3d",
+      "start": "nd_ri0ko03",
+      "end": "nd_ri0ko05",
+      "name": "Roh – svislý",
+      "materialId": "m_jekl_40_40_2",
+      "roll": 0,
+      "assemblyId": null,
+      "visible": true,
+      "locked": false,
+      "note": "",
+      "jointMode": "unresolved",
+      "ends": {
+        "start": {
+          "kind": "miter",
+          "targetId": "m3_ri0ko04",
+          "targetEnd": "end"
+        },
+        "end": {
+          "kind": "square"
+        }
+      }
+    },
+    {
+      "id": "m3_ri0kp09",
+      "type": "member3d",
+      "start": "nd_ri0kp07",
+      "end": "nd_ri0kp08",
+      "name": "Průběžný nosník",
+      "materialId": "m_jekl_40_40_2",
+      "roll": 0,
+      "assemblyId": null,
+      "visible": true,
+      "locked": false,
+      "note": "",
+      "jointMode": "unresolved",
+      "ends": {
+        "start": {
+          "kind": "square"
+        },
+        "end": {
+          "kind": "square"
+        }
+      }
+    },
+    {
+      "id": "m3_ri0kp0c",
+      "type": "member3d",
+      "start": "nd_ri0kp0a",
+      "end": "nd_ri0kp0b",
+      "name": "Sloup pod nosníkem",
+      "materialId": "m_jekl_40_40_2",
+      "roll": 0,
+      "assemblyId": null,
+      "visible": true,
+      "locked": false,
+      "note": "",
+      "jointMode": "unresolved",
+      "ends": {
+        "start": {
+          "kind": "square"
+        },
+        "end": {
+          "kind": "butt",
+          "targetId": "m3_ri0kp09",
+          "axis": "v",
+          "sign": -1,
+          "gap": 1
+        }
+      }
+    }
+  ],
+  "nodes3d": [
+    {
+      "id": "nd_ri0ko02",
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    {
+      "id": "nd_ri0ko03",
+      "x": 1000,
+      "y": 0,
+      "z": 0
+    },
+    {
+      "id": "nd_ri0ko05",
+      "x": 1000,
+      "y": 1000,
+      "z": 0
+    },
+    {
+      "id": "nd_ri0kp07",
+      "x": 1600,
+      "y": 1000,
+      "z": 0
+    },
+    {
+      "id": "nd_ri0kp08",
+      "x": 2800,
+      "y": 1000,
+      "z": 0
+    },
+    {
+      "id": "nd_ri0kp0a",
+      "x": 2200,
+      "y": 0,
+      "z": 0
+    },
+    {
+      "id": "nd_ri0kp0b",
+      "x": 2200,
+      "y": 1000,
+      "z": 0,
+      "binding": {
+        "memberId": "m3_ri0kp09",
+        "t": 0.5
+      }
+    }
+  ],
+  "materials": {
+    "m_jekl_40_40_2": {
+      "id": "m_jekl_40_40_2",
+      "name": "Jekl 40×40×2",
+      "category": "jekl_ctverec",
+      "dims": {
+        "a": 40,
+        "b": null,
+        "d": null,
+        "t": 2
+      },
+      "stockLength": 6000,
+      "color": "#6b7f96",
+      "active": true,
+      "note": "",
+      "builtin": true
+    }
+  },
+  "cutLocks": {},
+  "partNames": {}
+}

@@ -16,6 +16,9 @@
  *  • Prořez pily se do délky dílu nezapočítává, jen do rozložení na tyči.
  */
 import * as G from './geom.js';
+import {solveSpatialMember} from './spatial-fabrication.js';
+import {plateFrame} from './spatial-plates.js';
+import {endpoints3,distance3} from './spatial.js';
 import { makeCut, frameClearRect, meshRect } from './model.js';
 import { sectionWidth, sectionDepth, sectionText, categoryKind } from './materials.js';
 
@@ -68,6 +71,10 @@ function makePart(p) {
     cutL: p.cutL || makeCut(90, 0),
     cutR: p.cutR || makeCut(90, 0),
     axis: p.axis || null,
+    axis3d: p.axis3d || null,
+    productionReady: p.productionReady !== false,
+    fabrication: p.fabrication || null,
+    plate3d: p.plate3d || null,
     profileWidth: p.profileWidth ?? null,
     profileDepth: p.profileDepth ?? null,
     bendGeometry: p.bendGeometry || null,
@@ -88,6 +95,16 @@ export function buildParts(project, library) {
   for (const obj of project.objects) {
     // Visibility is a display preference, never a manufacturing filter.
     switch (obj.type) {
+      case 'plate3d': {
+        const info=matInfo(project,obj.materialId,library);
+        parts.push(makePart({key:`${obj.id}:0`,objectId:obj.id,name:obj.name,assemblyId:obj.assemblyId,assemblyName:project.assemblyName(obj.assemblyId),kind:'plech',materialId:obj.materialId,materialName:info.materialName,materialSection:info.materialSection,width:obj.width,height:obj.height,thickness:obj.thickness,holes:obj.holes.map(h=>({...h})),plate3d:plateFrame(project,obj),note:'Prostorový plech; otvory podle detailu dílu'}));break;
+      }
+      case 'member3d': {
+        const {a,b}=endpoints3(project,obj),info=matInfo(project,obj.materialId,library);
+        const fabrication=solveSpatialMember(project,obj,library);
+        if(a&&b)parts.push(makePart({key:`${obj.id}:0`,objectId:obj.id,name:obj.name||'3D profil',assemblyId:obj.assemblyId,assemblyName:project.assemblyName(obj.assemblyId),materialId:obj.materialId,materialName:info.materialName,materialSection:info.materialSection,stockLength:info.stockLength,profileWidth:info.width,profileDepth:info.depth,axis3d:{a:{...a},b:{...b}},length:fabrication.ready?fabrication.longEdge:distance3(a,b),centerLength:distance3(a,b),productionReady:fabrication.ready,fabrication,cutL:fabrication.cutL,cutR:fabrication.cutR,note:fabrication.ready?'3D řezy: viz souřadnice rohů; délka nejdelší hrany':'3D návrh: osová délka; konce nejsou vyřešené'}));
+        break;
+      }
       case 'frame':
         parts.push(...framePartsOf(project, obj, library));
         break;
@@ -112,7 +129,8 @@ export function buildParts(project, library) {
     const obj = project.byId(p.objectId);
     p.note = [obj?.note, p.note].filter(Boolean).join(' · ');
     p.lengthMode = obj?.lengthMode || 'outer';
-    if (p.kind === 'profil') {
+    if(p.axis3d){p.stockSpan=p.fabrication?.ready?p.fabrication.stockSpan:p.centerLength;p.lengthMode='spatial';}
+    if (p.kind === 'profil' && !p.axis3d) {
       const half = (p.profileWidth || 0) / 2;
       p.stockSpan = p.centerLength + Math.abs((p.cutL.orient || 0) * endExtension(half, p.cutL)) + Math.abs((p.cutR.orient || 0) * endExtension(half, p.cutR));
       if (p.lengthMode === 'center') p.length = p.centerLength;
@@ -514,6 +532,7 @@ function mergeKey(p, decimals) {
   const r = (x) => (x == null ? '-' : Math.round(x * Math.pow(10, decimals)));
   const cut = (c) => `${r(c.angle)}/${c.orient ?? 0}`;
   return [
+    p.axis3d || p.plate3d ? p.objectId : '-',
     p.kind,
     p.assemblyId || '-',
     p.shapeKey || '-',

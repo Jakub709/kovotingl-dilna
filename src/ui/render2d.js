@@ -201,7 +201,7 @@ export class Renderer {
 
     // Profilové díly z odvozeného modelu.
     for (const part of store.derived.parts) {
-      if (part.kind !== 'profil' || !p.isVisible(p.byId(part.objectId))) continue;
+      if (part.kind !== 'profil' || part.axis3d || !p.isVisible(p.byId(part.objectId))) continue;
       this.drawProfilePart(store, part, ui);
     }
 

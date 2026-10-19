@@ -5,6 +5,7 @@ dist/
 *-stdout.txt
 *.log
 *.kov
+!examples/*.kov
 *.docx
 .env
 .env.*
@@ -17,4 +18,3 @@ tools/smoke.js
 tools/smoke-ui.js
 CTI-ME.md
 STAV-ZADANI.md
-

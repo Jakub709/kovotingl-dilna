@@ -1,7 +1,9 @@
 const fs=require('fs'),path=require('path'),{spawn}=require('child_process');
-const out=path.resolve(__dirname,'../.test-output/packaged');fs.mkdirSync(out,{recursive:true});
-const exe=path.resolve(__dirname,'../dist/KovoTingl-Dilna-0.1.0.exe');
-const port=19437,wait=ms=>new Promise(r=>setTimeout(r,ms));
+const version=require('../package.json').version;
+const out=path.resolve(__dirname,'../.test-output/packaged-'+version);fs.mkdirSync(out,{recursive:true});
+const releaseDir=fs.existsSync(path.resolve(__dirname,'../dist/v'+version))?'../dist/v'+version:'../dist';
+const exe=path.resolve(__dirname,releaseDir,'KovoTingl-Dilna-'+version+'.exe');
+const port=19438,wait=ms=>new Promise(r=>setTimeout(r,ms));
 const log=(s)=>{fs.appendFileSync(path.join(out,'results.log'),s+'\n');console.log(s)};
 fs.writeFileSync(path.join(out,'results.log'),'');
 const child=process.argv.includes('--attach')?null:spawn(exe,[`--remote-debugging-port=${port}`],{env:{...process.env,KOVO_TEST_DATA:path.join(out,'user-data')},stdio:'ignore',windowsHide:true});
@@ -28,9 +30,20 @@ child?.on('error',e=>{log(e.stack);process.exitCode=1});
   if(!result?.result?.value)throw Error('Application did not become ready');
   if(result.exceptionDetails)throw Error(JSON.stringify(result.exceptionDetails));
   const state=result.result.value;log(JSON.stringify(state));
-  if(!state.ready||!state.desktop||state.version!=='0.1.0')throw Error('Unexpected packaged state');
+  if(!state.ready||!state.desktop||state.version!==version)throw Error('Unexpected packaged state');
   if(!process.argv.includes('--attach')&&(state.tool!=='sketch'||state.page!=='2d'))throw Error('Unexpected packaged initial tool');
   log('PASS portable executable runs with simple workspace and native bridge');
+  if(!process.argv.includes('--attach')){
+    const result=await call('Runtime.evaluate',{expression:`(()=>{document.getElementById('btn3d').click();window.app.spatial.pergolaDialog();const ok=!!document.getElementById('s3Width');window.app.modal.close();return ok})()`,returnByValue:true});
+    if(result.result?.value!==true)throw Error('Packaged 3D editor is unavailable');log('PASS packaged 3D editor and pergola dialog');
+    const sample=fs.readFileSync(path.resolve(__dirname,'../examples/spoje-3d.kov'),'utf8');
+    const workshop=await call('Runtime.evaluate',{expression:`(()=>{window.app.loadFrom(${JSON.stringify(sample)},null);const s=window.app.store;s.select(s.project.ofType('member3d')[0].id);document.querySelector('[data-s3="cutdetail"]').click();const ok=s.derived.parts.length===4&&s.derived.parts.every(p=>p.productionReady)&&!!document.querySelector('#modalBody table');window.app.modal.close();window.app.newProject(true);return ok})()`,returnByValue:true});
+    if(workshop.result?.value!==true)throw Error('Packaged fabrication failed');log('PASS packaged joints, cut plans and detail dialog');
+    const assembly=fs.readFileSync(path.resolve(__dirname,'../examples/pergola-svarovana.kov'),'utf8');
+    const solids=await call('Runtime.evaluate',{expression:`(()=>{window.app.loadFrom(${JSON.stringify(assembly)},null);const s=window.app.store;s.select(s.project.ofType('plate3d')[0].id);document.querySelector('[data-s3="platedetail"]').click();const ok=s.derived.parts.length===17&&s.derived.parts.every(p=>p.productionReady)&&s.derived.counts.errors===0&&!!document.querySelector('#modalBody svg')&&typeof window.kt.exportModel==='function';window.app.modal.close();window.app.newProject(true);return ok})()`,returnByValue:true});
+    if(solids.result?.value!==true)throw Error('Packaged 3D plates failed');log('PASS packaged welded pergola, drilled plates and export bridge');
+
+  }
   try{const capture=await call('Page.captureScreenshot',{format:'png'});fs.writeFileSync(path.join(out,'start.png'),Buffer.from(capture.data,'base64'));}catch(e){log('WARN optional screenshot: '+e.message);}
   if(!process.argv.includes('--attach')){await call('Runtime.evaluate',{expression:'window.close();true'});log('PASS packaged window closes');}
 }catch(e){log(e.stack);process.exitCode=1}finally{ws?.close();setTimeout(()=>process.exit(process.exitCode||0),500)}})();
