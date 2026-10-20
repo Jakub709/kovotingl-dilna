@@ -1,3 +1,5 @@
+import {partSolid} from './spatial-solid.js';
+import {meshPolygons,booleanPolygons,solidVolume} from './solid-boolean.js';
 import {basis,along,sub,cross,dot,length,mul} from './spatial-geometry.js';
 import {plateVertices} from './spatial-plates.js';
 import {endPlaneValue} from './spatial-fabrication.js';
@@ -17,11 +19,13 @@ export function envelopesOverlap(a,b,tolerance=.2){
   for(const axis of axes){const l=length(axis);if(l<1e-8)continue;const n=mul(axis,1/l),aa=a.vertices.map(v=>dot(v,n)),bb=b.vertices.map(v=>dot(v,n));if(Math.min(Math.max(...aa),Math.max(...bb))-Math.max(Math.min(...aa),Math.min(...bb))<=tolerance)return false;}
   return true;
 }
-export function spatialCollisions(project,parts){
+export function spatialCollisions(project,parts,library){
+  const cache=new Map(),byId=new Map(parts.map(p=>[p.objectId,p]));let limited=false,exact=0;
+  const solid=id=>{if(!cache.has(id)){const g=partSolid(project,byId.get(id),library);cache.set(id,meshPolygons(g));g.dispose();}return cache.get(id);};
   const envelopes=parts.map(p=>spatialEnvelope(project,p)).filter(Boolean).sort((a,b)=>a.min.x-b.min.x),pairs=[];let candidates=0;
   for(let i=0;i<envelopes.length;i++)for(let j=i+1;j<envelopes.length&&envelopes[j].min.x<envelopes[i].max.x-.2;j++){
     const a=envelopes[i],b=envelopes[j];if(['y','z'].some(k=>Math.min(a.max[k],b.max[k])-Math.max(a.min[k],b.min[k])<=.2))continue;
     if(++candidates>50000)return {pairs,limited:true};
-    if(envelopesOverlap(a,b)){pairs.push([a.id,b.id]);if(pairs.length>=100)return {pairs,limited:true};}
-  }return {pairs,limited:false};
+    if(envelopesOverlap(a,b)){let hit=true;try{if(++exact>100){limited=true;}else hit=solidVolume(booleanPolygons(solid(a.id),solid(b.id),'intersect'))>.01;}catch{limited=true;}if(hit)pairs.push([a.id,b.id]);if(pairs.length>=100)return {pairs,limited:true};}
+  }return {pairs,limited};
 }

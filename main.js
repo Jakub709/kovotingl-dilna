@@ -249,11 +249,12 @@ ipcMain.handle('file:saveDialog', async (_e, { defaultName }) => {
   return res.canceled ? { ok: false } : { ok: true, filePath: res.filePath };
 });
 
-ipcMain.handle('model:export', async (_e, { data, defaultName }) => {
+ipcMain.handle('model:export', async (_e, { data, defaultName, format='obj' }) => {
   try {
-    if(typeof data!=='string'||Buffer.byteLength(data,'utf8')>64*1024*1024||!data.startsWith('# KovoTingl'))throw Error('Neplatná data 3D modelu nebo překročení limitu 64 MB.');
+    if(!['obj','step'].includes(format))throw Error('Neplatný formát exportu.');
+    if(typeof data!=='string'||Buffer.byteLength(data,'utf8')>64*1024*1024||!(format==='step'?data.startsWith('ISO-10303-21;'):data.startsWith('# KovoTingl')))throw Error('Neplatná data 3D modelu nebo překročení limitu 64 MB.');
     const name=String(defaultName||'model').replace(/[<>:"/\\|?*\x00-\x1f]/g,'_').slice(0,100);
-    const res=await dialog.showSaveDialog(mainWindow,{title:'Exportovat 3D model (milimetry)',defaultPath:path.join(app.getPath('documents'),name+'.obj'),filters:[{name:'3D model OBJ',extensions:['obj']}]});
+    const res=await dialog.showSaveDialog(mainWindow,{title:'Exportovat 3D model (milimetry)',defaultPath:path.join(app.getPath('documents'),name+'.'+format),filters:[{name:format==='step'?'STEP ploškový povrch':'3D model OBJ',extensions:[format]}]});
     if(res.canceled||!res.filePath)return {ok:false};
     await atomicWrite(res.filePath,data);return {ok:true,filePath:res.filePath};
   }catch(err){return {ok:false,error:err.message};}

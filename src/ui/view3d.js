@@ -5,6 +5,7 @@
  * podél osy dílu a konce se zkosí podle skutečných úhlů řezu. 3D je kontrolní
  * náhled – veškeré úpravy se dělají ve 2D (FR-3D-007).
  */
+import {memberSolid,plateSolid} from '../core/spatial-solid.js';
 import * as THREE from '../vendor/three.module.js';
 import { OrbitControls } from '../vendor/OrbitControls.js';
 import * as G from '../core/geom.js';
@@ -167,8 +168,8 @@ export class View3D {
   addProfilePart(part) {
     const store = this.store;
     const mat = store.project.material(part.materialId, store.library);
-    if (!mat) return;
-    if(part.axis3d){this.addExtrusion(part,mat,part.axis3d.a,part.axis3d.b,part.cutL,part.cutR);return;}
+    if (!mat || part.machiningError) return;
+    if(part.axis3d){const geo=memberSolid(this.store.project,part,mat),mesh=new THREE.Mesh(geo,this.materialFor(part,mat.color||'#7d8b99'));mesh.userData={objectId:part.objectId,partKey:part.key,baseColor:mat.color||'#7d8b99'};this.root.add(mesh);if(this.showEdges)this.root.add(new THREE.LineSegments(new THREE.EdgesGeometry(geo,25),new THREE.LineBasicMaterial({color:0x3c4854})));return;}
     if(!part.axis)return;
 
     const obj = store.project.byId(part.objectId);
@@ -263,32 +264,7 @@ export class View3D {
     const obj = store.project.byId(part.objectId);
     if (!obj) return;
     const mat = store.project.material(part.materialId, store.library);
-    const th = part.thickness || 6;
-
-    const points=part.plate3d?[[-1,-1],[1,-1],[1,1],[-1,1]].map(([x,y])=>({x:x*part.width/2,y:y*part.height/2})):obj.points;
-    const shape = new THREE.Shape(points.map((q) => new THREE.Vector2(q.x, q.y)));
-    for (const h of obj.holes || []) {
-      const path = new THREE.Path();
-      if (h.kind === 'circle') {
-        path.absarc(h.cx, h.cy, h.d / 2, 0, Math.PI * 2, true);
-      } else {
-        // Ovál jako obdélník se zaoblenými konci.
-        const r = Math.min(h.w, h.h) / 2;
-        if (h.w >= h.h) {
-          const dx = h.w / 2 - r;
-          path.absarc(h.cx + dx, h.cy, r, -Math.PI / 2, Math.PI / 2, false);
-          path.absarc(h.cx - dx, h.cy, r, Math.PI / 2, Math.PI * 1.5, false);
-        } else {
-          const dy = h.h / 2 - r;
-          path.absarc(h.cx, h.cy + dy, r, 0, Math.PI, false);
-          path.absarc(h.cx, h.cy - dy, r, Math.PI, Math.PI * 2, false);
-        }
-      }
-      shape.holes.push(path);
-    }
-
-    const geo = new THREE.ExtrudeGeometry(shape, { depth: th, bevelEnabled: false, curveSegments: 20 });
-    if(part.plate3d){const f=part.plate3d,v=q=>new THREE.Vector3(q.x,q.y,q.z),matrix=new THREE.Matrix4().makeBasis(v(f.u),v(f.v),v(f.normal));matrix.setPosition(v(f.origin));geo.applyMatrix4(matrix);}else geo.translate(0, 0, -th / 2);
+    const geo=plateSolid(store.project,part);
     const mesh = new THREE.Mesh(geo, this.materialFor(part, mat?.color || '#98a1ab'));
     mesh.userData = { objectId: part.objectId, partKey: part.key, baseColor: mat?.color || '#98a1ab' };
     this.root.add(mesh);

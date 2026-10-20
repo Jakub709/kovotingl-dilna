@@ -1,0 +1,132 @@
+{
+  "kind": "kovotingl-project",
+  "formatVersion": 5,
+  "id": "prj_ek4kq03",
+  "name": "Jekl – vrtání a natočený výřez",
+  "customer": "",
+  "note": "",
+  "units": "mm",
+  "created": "2026-10-19T15:21:48.842Z",
+  "modified": "2026-10-19T15:21:50.569Z",
+  "settings": {
+    "kerf": 3,
+    "gridStep": 10,
+    "snap": true,
+    "showGrid": true,
+    "showDims": true,
+    "showRef": true,
+    "profileFillMode": "count",
+    "lengthDecimals": 0,
+    "mergeIdentical": true,
+    "autoValidate": true,
+    "sharedMiter": false
+  },
+  "assemblies": [],
+  "objects": [
+    {
+      "id": "m3_ek4md06",
+      "type": "member3d",
+      "start": "nd_ek4md04",
+      "end": "nd_ek4md05",
+      "name": "3D profil",
+      "materialId": "m_jekl_40_40_2",
+      "roll": 0,
+      "assemblyId": null,
+      "visible": true,
+      "locked": false,
+      "note": "",
+      "jointMode": "unresolved",
+      "ends": {
+        "start": {
+          "kind": "square"
+        },
+        "end": {
+          "kind": "square"
+        }
+      },
+      "checks": {
+        "beam": {
+          "width": 40,
+          "height": 40,
+          "t": 2,
+          "span": 1000,
+          "q": 1,
+          "force": 0,
+          "E": 210000,
+          "fy": 235,
+          "limit": 250
+        },
+        "weld": {
+          "force": 10,
+          "a": 3,
+          "length": 100,
+          "fu": 360,
+          "beta": 0.8,
+          "gamma": 1.25
+        }
+      },
+      "machining": [
+        {
+          "kind": "drill",
+          "axis": "v",
+          "sign": 1,
+          "at": 500,
+          "offset": 0,
+          "diameter": 12,
+          "width": 20,
+          "height": 30,
+          "depth": 3,
+          "angle": 0,
+          "through": true
+        },
+        {
+          "kind": "box",
+          "axis": "v",
+          "sign": 1,
+          "at": 150,
+          "offset": 0,
+          "diameter": 12,
+          "width": 20,
+          "height": 30,
+          "depth": 3,
+          "angle": 30,
+          "through": false
+        }
+      ]
+    }
+  ],
+  "nodes3d": [
+    {
+      "id": "nd_ek4md04",
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    {
+      "id": "nd_ek4md05",
+      "x": 0,
+      "y": 0,
+      "z": 1000
+    }
+  ],
+  "materials": {
+    "m_jekl_40_40_2": {
+      "id": "m_jekl_40_40_2",
+      "name": "Jekl 40×40×2",
+      "category": "jekl_ctverec",
+      "dims": {
+        "a": 40,
+        "b": null,
+        "d": null,
+        "t": 2
+      },
+      "stockLength": 6000,
+      "color": "#6b7f96",
+      "active": true,
+      "note": "",
+      "builtin": true
+    }
+  },
+  "cutLocks": {},
+  "partNames": {}
+}

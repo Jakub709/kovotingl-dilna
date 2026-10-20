@@ -1,3 +1,4 @@
+import {memberSolid} from './spatial-solid.js';
 /**
  * Odvození výrobních dílů (Part) z geometrie (§12, §15).
  *
@@ -74,6 +75,8 @@ function makePart(p) {
     axis3d: p.axis3d || null,
     productionReady: p.productionReady !== false,
     fabrication: p.fabrication || null,
+    machining: p.machining || [],
+    checks: p.checks || {},
     plate3d: p.plate3d || null,
     profileWidth: p.profileWidth ?? null,
     profileDepth: p.profileDepth ?? null,
@@ -102,7 +105,7 @@ export function buildParts(project, library) {
       case 'member3d': {
         const {a,b}=endpoints3(project,obj),info=matInfo(project,obj.materialId,library);
         const fabrication=solveSpatialMember(project,obj,library);
-        if(a&&b)parts.push(makePart({key:`${obj.id}:0`,objectId:obj.id,name:obj.name||'3D profil',assemblyId:obj.assemblyId,assemblyName:project.assemblyName(obj.assemblyId),materialId:obj.materialId,materialName:info.materialName,materialSection:info.materialSection,stockLength:info.stockLength,profileWidth:info.width,profileDepth:info.depth,axis3d:{a:{...a},b:{...b}},length:fabrication.ready?fabrication.longEdge:distance3(a,b),centerLength:distance3(a,b),productionReady:fabrication.ready,fabrication,cutL:fabrication.cutL,cutR:fabrication.cutR,note:fabrication.ready?'3D řezy: viz souřadnice rohů; délka nejdelší hrany':'3D návrh: osová délka; konce nejsou vyřešené'}));
+        if(a&&b)parts.push(makePart({key:`${obj.id}:0`,objectId:obj.id,name:obj.name||'3D profil',assemblyId:obj.assemblyId,assemblyName:project.assemblyName(obj.assemblyId),materialId:obj.materialId,materialName:info.materialName,materialSection:info.materialSection,stockLength:info.stockLength,profileWidth:info.width,profileDepth:info.depth,machining:obj.machining||[],checks:obj.checks||{},axis3d:{a:{...a},b:{...b}},length:fabrication.ready?fabrication.longEdge:distance3(a,b),centerLength:distance3(a,b),productionReady:fabrication.ready,fabrication,cutL:fabrication.cutL,cutR:fabrication.cutR,note:fabrication.ready?'3D řezy: viz souřadnice rohů; délka nejdelší hrany':'3D návrh: osová délka; konce nejsou vyřešené'}));
         break;
       }
       case 'frame':
@@ -127,6 +130,7 @@ export function buildParts(project, library) {
   // Uživatelská pojmenování mají přednost před výchozími.
   for (const p of parts) {
     const obj = project.byId(p.objectId);
+    if(p.axis3d){p.beamCheckApplicable=['jekl_ctverec','jekl_obdelnik'].includes(project.material(p.materialId,library)?.category)&&!obj?.machining?.length;p.wallThickness=project.material(p.materialId,library)?.dims?.t;if(obj?.machining?.length){try{memberSolid(project,p,project.material(p.materialId,library)).dispose();}catch(err){p.machiningError=err.message;p.productionReady=false;}}}
     p.note = [obj?.note, p.note].filter(Boolean).join(' · ');
     p.lengthMode = obj?.lengthMode || 'outer';
     if(p.axis3d){p.stockSpan=p.fabrication?.ready?p.fabrication.stockSpan:p.centerLength;p.lengthMode='spatial';}

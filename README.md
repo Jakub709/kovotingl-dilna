@@ -2,7 +2,17 @@
 
 Jednoduchá desktopová aplikace pro kreslení zámečnických konstrukcí. Pilotní verze pro Windows, s volným náčrtem myší, přesnými rozměry, kusovníkem a nářezovým plánem. Pracuje offline.
 
-## Verze 0.4.0: konstrukce ve 3D
+## Verze 0.5.0: obrábění, kolize a orientační výpočty
+
+- Vrtání jedné nebo obou stěn jeklu a natočené obdélníkové výřezy.
+- Kolizní kontrola skutečného materiálu po odečtení dutin a otvorů.
+- STEP AP214 jako ploškový povrchový model; nejde o analytický objemový BREP.
+- Orientační ohyb/průhyb jednoho prostě podepřeného nosníku a výpočet koutového svaru pod přímou silou.
+- Vstupy se ukládají, obrábění i výsledky jsou ve výrobních detailech.
+
+[Postup, vzorce a přesná omezení](VYPOCTY-A-OBRABENI.md). Lokální sestavení: `dist/v0.5.0/KovoTingl-Dilna-0.5.0.exe`.
+
+## Konstrukce ve 3D
 
 - Volné skládání prostorových profilů, přesné souřadnice, sdílené body a vazby na nosníky.
 - **Svařovaná pergola:** automatické řezy sloupů a krokví, průběžné nosníky a čtyři patky s otvory. Výchozí model má 17 dílů a lze jej dále upravovat. Materiály sloupů, nosníků a krokví se volí samostatně.
@@ -11,7 +21,7 @@ Jednoduchá desktopová aplikace pro kreslení zámečnických konstrukcí. Pilo
 - **Posunout šipkami:** tažení os X/Y/Z posouvá celou propojenou konstrukci. Krok odpovídá mřížce, Alt používá 1 mm. Přesné otáčení je pod **Posunout / otočit**.
 - **Změřit vzdálenost:** dva kliky na body os nebo povrch modelu zobrazí prostorovou vzdálenost a rozdíly X/Y/Z. Při přichycení na uzel jde o bod osy, nikoliv o seříznutý povrch.
 - Kopírování zachovává vnitřní vazby a patky. Smazání profilu odpojí jeho patku a zachová její světovou polohu. Undo/redo platí i pro nové funkce.
-- Kontrola možných kolizí vnějších objemů. Dutiny profilů a otvory se při této kontrole neodečítají, takže upozornění vyžaduje kontrolu uživatelem. U velmi rozsáhlého modelu se výslovně hlásí částečná kontrola.
+- Kontrola kolizí materiálových objemů včetně dutin a otvorů. Kruhy se aproximují ploškami. U velmi rozsáhlého modelu se výslovně hlásí částečná kontrola.
 - Kusovník, nářez vyřešených profilů, tři hranové pohledy a samostatné výkresy řezů i plechů s polohami otvorů. OBJ exportuje viditelné 3D díly jako trojúhelníkový model v mm.
 
 ### Vyzkoušení
@@ -22,19 +32,19 @@ Souřadnice jsou v mm: X = šířka, Y = výška, Z = hloubka. Klik vybere díl;
 
 ### Přesný rozsah
 
-Výrobní spoje jsou pro čtvercové a obdélníkové jekly. Celý řez musí ležet na skutečné ploše opory. Pokos vyžaduje shodné průřezy a geometricky slučitelné natočení; algoritmus nevytváří obecné výřezy do bočních stěn. Otvory jsou nyní v plechových dílech, ne vrtání stěnou profilu. OBJ je trojúhelníkový model, nikoliv STEP s CAD plochami. Statické dimenzování a technologický návrh svarů aplikace neprovádí. Volby materiálu v pergole jsou geometrické výchozí hodnoty.
+Výrobní spoje jsou pro čtvercové a obdélníkové jekly. Celý řez musí ležet na skutečné ploše opory. Pokos vyžaduje shodné průřezy a geometricky slučitelné natočení; algoritmus nevytváří obecné výřezy do bočních stěn. Otvory lze vytvořit v plechových dílech i stěnách jeklů. OBJ a STEP používají ploškovou aproximaci. Statický model celé konstrukce ani technologický návrh svarů aplikace neprovádí; nabízí omezené orientační výpočty. Volby materiálu v pergole jsou geometrické výchozí hodnoty.
 
 Nevyřešené profily mají pouze osovou délku a nevstupují do nářezu. Tlačítko kolmých konců vyjadřuje záměr uživatele; automaticky nedokazuje, že konec je volný. Délka polotovaru a nejdelší hrana se mohou lišit. Detaily rohů řezu určují geometrii, ne nastavení konkrétní pily.
 
-Formát projektu **4** přidává prostorové plechy a přílohy patek. Verze 0.4.0 otevírá formáty 1–3. Starší aplikace soubor formátu 4 neotevře; pro původní projekty doporučujeme **Uložit jako**.
+Formát projektu **5** přidává obrábění a vstupy výpočtů. Verze 0.5.0 otevírá formáty 1–4. Starší aplikace soubor formátu 5 neotevře; pro původní projekty doporučujeme **Uložit jako**.
 
 Další rozvoj a moduly popisuje [ARCHITEKTURA-3D.md](ARCHITEKTURA-3D.md).
 
 ## Stažení a spuštění
 
-**[Stáhnout aplikaci pro Windows – verze 0.4.0](https://github.com/Jakub709/kovotingl-dilna/releases/download/v0.4.0/KovoTingl-Dilna-0.4.0.exe)**
+**[Stáhnout aplikaci pro Windows – verze 0.5.0](https://github.com/Jakub709/kovotingl-dilna/releases/download/v0.5.0/KovoTingl-Dilna-0.5.0.exe)**
 
-[Návod a ukázková pergola ke stažení](https://github.com/Jakub709/kovotingl-dilna/releases/tag/v0.4.0). Přenosná aplikace nevyžaduje instalaci. Balíček není digitálně podepsaný.
+[Návod a ukázková pergola ke stažení](https://github.com/Jakub709/kovotingl-dilna/releases/tag/v0.5.0). Přenosná aplikace nevyžaduje instalaci. Balíček není digitálně podepsaný.
 
 ## Základní postup
 

@@ -1,3 +1,4 @@
+import {validateMachining} from './spatial-machining.js';
 /** Spatial model v1. Millimetres, X = width, Y = height, Z = depth.
  * Nodes are shared explicitly; rendering and UI never own geometry.
  * Members currently describe axes, not production joints/cutting planes.
@@ -64,7 +65,7 @@ export function repeatMembers3(p,ids,count,offset) {
       const points=[m.start,m.end].map(id=>{if(!map.has(id)){const n=node3(p,id);map.set(id,addNode3(p,{x:n.x+offset.x*i,y:n.y+offset.y*i,z:n.z+offset.z*i},false));}return map.get(id)});
       // Keep copied groups independent from original nodes, but shared within a copy.
       const copy=addMember3(p,points[0],points[1],{...m,reuse:false});
-      copy.start=points[0].id;copy.end=points[1].id;copy.note=m.note||'';result.push(copy);copied.set(m.id,copy);
+      copy.start=points[0].id;copy.end=points[1].id;copy.note=m.note||'';if(m.machining)copy.machining=structuredClone(m.machining);if(m.checks)copy.checks=structuredClone(m.checks);result.push(copy);copied.set(m.id,copy);
     }
     for(const [oldId,copy]of copied){const original=p.byId(oldId);copy.ends={};for(const e of ['start','end']){const joint=original.ends?.[e]||{kind:'unresolved'};copy.ends[e]=joint.targetId?(copied.has(joint.targetId)?{...joint,targetId:copied.get(joint.targetId).id}:{kind:'unresolved'}):{...joint};}}
     for(const [id,node]of map){const binding=node3(p,id).binding;if(binding&&copied.has(binding.memberId))node.binding={...binding,memberId:copied.get(binding.memberId).id};}
@@ -90,6 +91,7 @@ export function validateSpatialDocument(d) {
   const nodes=new Map();
   for(const n of d.nodes3d){if(!validPoint3(n)||typeof n.id!=='string'||!/^[-_a-zA-Z0-9]+$/.test(n.id)||nodes.has(n.id))throw Error('Neplatný nebo duplicitní prostorový bod.');nodes.set(n.id,n);}
   for(const m of d.objects.filter(o=>o.type==='member3d')){
+    validateMachining(m);
     const a=nodes.get(m.start),b=nodes.get(m.end);
     if(!a||!b||distance3(a,b)<1||!Number.isFinite(m.roll)||Math.abs(m.roll)>360||m.jointMode!=='unresolved')throw Error('Neplatný prostorový profil nebo chybějící koncový bod.');
     for(const e of Object.values(m.ends||{})){if(!e||!['unresolved','square','butt','miter'].includes(e.kind))throw Error('Neplatný typ prostorového spoje.');if(['butt','miter'].includes(e.kind)&&!d.objects.some(t=>t.type==='member3d'&&t.id===e.targetId&&t.id!==m.id))throw Error('Chybí protilehlý profil spoje.');if(e.kind==='butt'&&(!['u','v'].includes(e.axis)||![1,-1].includes(e.sign)||!Number.isFinite(e.gap)||e.gap<0||e.gap>20))throw Error('Neplatná plocha nebo mezera spoje.');if(e.kind==='miter'&&!['start','end'].includes(e.targetEnd))throw Error('Neplatný konec pokosu.');}

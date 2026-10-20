@@ -1,3 +1,4 @@
+import {SpatialAdvanced} from './spatial-advanced.js';
 import {SpatialMoveGizmo} from './spatial-gizmo.js';
 import {SpatialSolids} from './spatial-solids.js';
 import {spatialObjects} from '../core/spatial-plates.js';
@@ -17,7 +18,7 @@ export class SpatialEditor {
   constructor(app){
     this.app=app;this.store=app.store;this.view=app.view3d;this.tool='select';this.plane='xz';this.level=0;this.step=100;this.height=2400;this.materialId='m_jekl_40_40_2';this.pending=null;
     this.rail=document.createElement('div');this.rail.className='spatial-tools';
-    this.rail.innerHTML=`<span class="rail-caption">MODELOVÁNÍ 3D</span><button data-s3="select" class="s3-tool active">↖ Vybrat / otočit</button><button data-s3="move" class="s3-tool">↔ Posunout šipkami</button><button data-s3="post" class="s3-tool">↥ Sloup</button><button data-s3="beam" class="s3-tool">╱ Spojit dva body</button><button data-s3="numeric" class="s3-tool">＋ Profil podle bodů</button><button data-s3="pergola" class="s3-tool s3-accent">▦ Vytvořit pergolu</button><button data-s3="plate3d" class="s3-tool">▱ Plech v prostoru</button><button data-s3="measure" class="s3-tool">↔ Změřit vzdálenost</button><button data-s3="all3d" class="s3-tool">Vybrat vše ve 3D</button><button data-s3="exportobj" class="s3-tool">Export 3D modelu · OBJ</button><div class="s3-settings"><label class="s3-field">Kreslicí rovina<select id="s3Plane"><option value="xz">Půdorys (X / Z)</option><option value="xy">Čelo (X / výška)</option><option value="zy">Bok (Z / výška)</option></select></label>${field('s3Level','Poloha roviny · mm',0)}${field('s3Step','Krok mřížky · mm',100)}${field('s3Height','Výška nového sloupu',2400)}<button data-s3="planeView" class="btn">Kolmo na rovinu</button></div><p class="s3-caption">Body se přichytávají k mřížce a existujícím koncům. X = šířka, Y = výška, Z = hloubka.</p>`;
+    this.rail.innerHTML=`<span class="rail-caption">MODELOVÁNÍ 3D</span><button data-s3="select" class="s3-tool active">↖ Vybrat / otočit</button><button data-s3="move" class="s3-tool">↔ Posunout šipkami</button><button data-s3="post" class="s3-tool">↥ Sloup</button><button data-s3="beam" class="s3-tool">╱ Spojit dva body</button><button data-s3="numeric" class="s3-tool">＋ Profil podle bodů</button><button data-s3="pergola" class="s3-tool s3-accent">▦ Vytvořit pergolu</button><button data-s3="plate3d" class="s3-tool">▱ Plech v prostoru</button><button data-s3="measure" class="s3-tool">↔ Změřit vzdálenost</button><button data-s3="all3d" class="s3-tool">Vybrat vše ve 3D</button><button data-s3="exportstep" class="s3-tool">Export STEP · ploškový model</button><button data-s3="exportobj" class="s3-tool">Export 3D modelu · OBJ</button><div class="s3-settings"><label class="s3-field">Kreslicí rovina<select id="s3Plane"><option value="xz">Půdorys (X / Z)</option><option value="xy">Čelo (X / výška)</option><option value="zy">Bok (Z / výška)</option></select></label>${field('s3Level','Poloha roviny · mm',0)}${field('s3Step','Krok mřížky · mm',100)}${field('s3Height','Výška nového sloupu',2400)}<button data-s3="planeView" class="btn">Kolmo na rovinu</button></div><p class="s3-caption">Body se přichytávají k mřížce a existujícím koncům. X = šířka, Y = výška, Z = hloubka.</p>`;
     document.getElementById('tools').append(this.rail);
     this.panel=document.createElement('div');this.panel.className='spatial-inspector';document.getElementById('side').append(this.panel);
     this.hint=document.createElement('div');this.hint.className='s3-hint';document.getElementById('viewport3d').append(this.hint);
@@ -39,7 +40,7 @@ export class SpatialEditor {
       else if(e.key==='Delete'||e.key==='Backspace'){this.remove();e.stopImmediatePropagation();e.preventDefault()}
       else if(!e.ctrlKey&&!e.metaKey&&e.key.length===1){if(e.key.toLowerCase()==='v')this.setTool('select');if(e.key.toLowerCase()==='f')this.view.fit();e.stopImmediatePropagation();}
     },true);
-    this.gizmo=new SpatialMoveGizmo(this);this.solids=new SpatialSolids(this);this.workshop=new SpatialWorkshop(this);this.render();
+    this.gizmo=new SpatialMoveGizmo(this);this.solids=new SpatialSolids(this);this.advanced=new SpatialAdvanced(this);this.workshop=new SpatialWorkshop(this);this.render();
   }
   active(){return this.app.simple?.page==='3d'}
   activate(){this.setTool('select');this.render();this.projectDots()}
@@ -109,11 +110,11 @@ export class SpatialEditor {
     }
     if(sel.length)html+=`<div class="ins-section simple-actions"><button class="btn" data-s3="repeat">Kopie / rozestupy</button><button class="btn" data-s3="delete">Odstranit vybrané</button></div>`;
     html+=`<div class="ins-section">${this.materialSelect('s3Material',this.materialId)}<p class="s3-caption">Materiál pro nové profily. Nejdřív nakresli osy, potom nastav konce a spoje.</p></div><details class="s3-list" ${all.length?'open':''}><summary>Díly konstrukce (${all.length})</summary>${all.map(m=>`<button class="${this.store.selection.has(m.id)?'active':''}" data-s3="pick" data-id="${esc(m.id)}">${esc(m.name)} <small>${m.type==='plate3d'?m.width+' × '+m.height:round(distance3(...Object.values(endpoints3(this.store.project,m))))} mm</small></button>`).join('')}</details>`;
-    this.panel.innerHTML=(this.solids?.html()||'')+(this.workshop?.html()||'')+html;
+    this.panel.innerHTML=(this.advanced?.html()||'')+(this.solids?.html()||'')+(this.workshop?.html()||'')+html;
   }
   value(id){const v=parseLength(document.getElementById(id).value);if(!Number.isFinite(v))throw Error('Vyplň platný rozměr.');return v}
   action(action,id,shift=false){try{
-    if(this.solids.action(action,id)||this.workshop.action(action))return;
+    if(this.advanced.action(action,id)||this.solids.action(action,id)||this.workshop.action(action))return;
     if(action==='move'&&!this.selected().length){this.app.toast('Nejdřív kliknutím vyber díl nebo použij Vybrat vše ve 3D.','warn');return;}
     if(['select','post','beam','measure','move'].includes(action))this.setTool(action);
     else if(action==='pergola')this.pergolaDialog();

@@ -7,7 +7,7 @@ import * as G from './geom.js';
 import {pruneNodes3,validateSpatialDocument} from './spatial.js';
 import {validatePlate3,detachPlate3} from './spatial-plates.js';
 
-export const FORMAT_VERSION = 4;
+export const FORMAT_VERSION = 5;
 
 /** Režimy rohového spoje rámu (§9.1). */
 export const CORNER_MODES = [

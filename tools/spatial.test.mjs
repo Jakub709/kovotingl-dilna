@@ -33,7 +33,7 @@ test('deleting a member prunes only unused nodes; undo restores topology',()=>{
   const s=new Store(),a=addMember3(s.project,{x:0,y:0,z:0},{x:0,y:1000,z:0}),b=addMember3(s.project,{x:0,y:1000,z:0},{x:1000,y:1000,z:0});s.commit('delete',p=>p.remove(a.id));assert.equal(s.project.nodes3d.length,2);assert.ok(node3(s.project,b.start));s.undo();assert.equal(s.project.nodes3d.length,3);assert.equal(members3(s.project).length,2);
 });
 test('3D saves round-trip through format 4 and legacy files still load',()=>{
-  const s=new Store();createPergola3(s.project);const json=s.project.toJSON();assert.equal(json.formatVersion,4);const copy=Project.fromJSON(JSON.stringify(json));assert.deepEqual(copy.nodes3d,s.project.nodes3d);assert.deepEqual(copy.objects,s.project.objects);
+  const s=new Store();createPergola3(s.project);const json=s.project.toJSON();assert.equal(json.formatVersion,5);const copy=Project.fromJSON(JSON.stringify(json));assert.deepEqual(copy.nodes3d,s.project.nodes3d);assert.deepEqual(copy.objects,s.project.objects);
   const legacy={kind:'kovotingl-project',formatVersion:1,objects:[],assemblies:[]};assert.deepEqual(Project.fromJSON(legacy).nodes3d,[]);
 });
 test('dangling, duplicate and invalid 3D nodes are rejected on load',()=>{

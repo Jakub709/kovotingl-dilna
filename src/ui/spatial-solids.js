@@ -17,7 +17,7 @@ export class SpatialSolids {
     if(!['plate3d','baseplates','plateprops','hole3d','deletehole','platedetail','detachplate','exportobj','all3d'].includes(action))return false;
     const e=this.e,s=this.s,sel=e.selected(),m=sel[0];
     if(action==='all3d'){s.select(spatialObjects(s.project).map(o=>o.id));return true;}
-    if(action==='exportobj'){e.view.rebuild();const text=exportOBJ(e.view.root,s.project);if(!window.kt?.exportModel)throw Error('Export je dostupný v desktopové aplikaci.');window.kt.exportModel(text,s.project.name).then(r=>{if(r?.ok)e.app.toast('3D model byl exportován.');else if(r?.error)e.app.toast(r.error,'err');}).catch(err=>e.app.toast(err.message,'err'));return true;}
+    if(action==='exportobj'){if(s.derived.parts.some(p=>p.machiningError))throw Error('Nejdříve oprav neplatné obrábění.');e.view.rebuild();const text=exportOBJ(e.view.root,s.project);if(!window.kt?.exportModel)throw Error('Export je dostupný v desktopové aplikaci.');window.kt.exportModel(text,s.project.name).then(r=>{if(r?.ok)e.app.toast('3D model byl exportován.');else if(r?.error)e.app.toast(r.error,'err');}).catch(err=>e.app.toast(err.message,'err'));return true;}
     if(action==='plate3d'||action==='baseplates'){
       if(action==='baseplates'&&(!sel.length||sel.some(o=>o.type!=='member3d')))throw Error('Vyber sloupy, ke kterým chceš přidat patky.');
       const mat=s.library.items.find(m=>m.category==='plech'&&m.dims.t===8);

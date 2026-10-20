@@ -25,15 +25,16 @@ function issue(code, severity, title, message, objectIds = [], extra = {}) {
 export function validate(project, library, parts, plans = []) {
   const out = [];
   const spatial=members3(project);
+  for(const p of parts)if(p.machiningError)out.push(issue('MACHINING',SEVERITY.ERROR,'Neplatné obrábění',p.machiningError,[p.objectId]));
   for(const plate of project.objects.filter(o=>o.type==='plate3d')){
     try{validatePlate3(project,plate);}catch(err){out.push(issue('BAD_PLATE3D',SEVERITY.ERROR,'Neplatný prostorový plech',err.message,[plate.id]));}
     const mat=project.material(plate.materialId,library);
     if(!mat||mat.category!=='plech'||Math.abs(mat.dims.t-plate.thickness)>.001)out.push(issue('PLATE3D_MATERIAL',SEVERITY.ERROR,'Materiál plechu','Tloušťka plechu musí odpovídat zvolenému materiálu.',[plate.id]));
     if(plate.attachment){const m=project.byId(plate.attachment.memberId),end=m?.ends?.[plate.attachment.end];if(end?.kind!=='square')out.push(issue('PLATE3D_END',SEVERITY.WARN,'Zkontroluj napojení patky','Patka leží kolmo k ose. Konec připojeného profilu není potvrzený jako kolmý.',[plate.id,m?.id].filter(Boolean)));}
   }
-  const collisions=spatialCollisions(project,parts);
-  for(const ids of collisions.pairs)out.push(issue('SPATIAL_COLLISION',SEVERITY.WARN,'Možná kolize ve 3D','Vnější objemy těchto dílů se překrývají. Kontrola nezohledňuje dutiny jeklů a otvory; ověř skutečný spoj.',ids));
-  if(collisions.limited)out.push(issue('SPATIAL_COLLISION_LIMIT',SEVERITY.WARN,'Kontrola kolizí je částečná','Model obsahuje příliš mnoho kandidátů na kolizi. Byla zkontrolována pouze část dvojic.'));
+  const collisions=spatialCollisions(project,parts,library);
+  for(const ids of collisions.pairs)out.push(issue('SPATIAL_COLLISION',SEVERITY.WARN,'Možná kolize ve 3D','Materiálové objemy dílů se překrývají. Kontrola odečítá dutiny a obrábění, kruhy aproximuje ploškami. Při částečné kontrole jde pouze o možnou kolizi obálek.',ids));
+  if(collisions.limited)out.push(issue('SPATIAL_COLLISION_LIMIT',SEVERITY.WARN,'Kontrola kolizí je částečná','Přesná kontrola narazila na limit počtu dvojic nebo na nevyřešenou geometrii. U některých dvojic se kontrolovaly jen vnější obálky.'));
   const drafts=parts.filter(p=>p.axis3d&&!p.productionReady);
   if(drafts.length)out.push(issue('SPATIAL_DRAFT',SEVERITY.WARN,'3D návrh – nevyřešené konce','Nevyřešené 3D díly mají osové délky a nejsou v nářezu.',drafts.map(p=>p.objectId)));
   for(const part of drafts)for(const message of part.fabrication?.issues||[])out.push(issue('SPATIAL_JOINT',SEVERITY.ERROR,'Zkontroluj prostorový spoj',message,[part.objectId]));

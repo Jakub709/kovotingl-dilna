@@ -32,4 +32,8 @@ Změřit vzdálenost: klikni na dva body. Uzel znamená bod osy; klik na plochu 
 
 Seznam dílů obsahuje profily i plechy. Nářez tyčí obsahuje vyřešené profilové polotovary; plošný nářez plechů se neoptimalizuje. Výstupy / tisk vytvoří PDF s pohledy, kusovníkem, nářezem a detaily řezů a otvorů. Export 3D modelu vytvoří OBJ s viditelnými díly v milimetrech.
 
-Před výrobou zkontroluj chyby a upozornění na kolize. Kolize porovnávají vnější objemy bez odečtení dutin a otvorů. Kontrola nenahrazuje ověření konstrukce, kotvení a svarů.
+Před výrobou zkontroluj chyby a upozornění na kolize. Kolize kontrolují materiálové objemy včetně dutin a otvorů; při dosažení limitu zobrazí upozornění na částečnou kontrolu. Kontrola nenahrazuje ověření konstrukce, kotvení a svarů.
+
+## Obrábění a výpočty (0.5.0)
+
+Vyber jekl: vpravo jsou nové volby Otvor / výřez do jeklu, Průhyb a napětí nosníku a Orientační koutový svar. Vlevo je Export STEP · ploškový model. Podrobný postup a rozsah jsou v [VYPOCTY-A-OBRABENI.md](VYPOCTY-A-OBRABENI.md).

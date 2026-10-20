@@ -20,7 +20,7 @@ contextBridge.exposeInMainWorld('kt', {
   materialsSave: (data) => ipcRenderer.invoke('materials:save', data),
 
   /* výstupy */
-  exportModel: (data, defaultName) => ipcRenderer.invoke('model:export', { data, defaultName }),
+  exportModel: (data, defaultName, format = 'obj') => ipcRenderer.invoke('model:export', { data, defaultName, format }),
   exportPdf: (html, landscape, defaultName) => ipcRenderer.invoke('pdf:export', { html, landscape, defaultName }),
   printReport: (html, landscape) => ipcRenderer.invoke('pdf:print', { html, landscape }),
 

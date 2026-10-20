@@ -44,6 +44,11 @@ child?.on('error',e=>{log(e.stack);process.exitCode=1});
     if(solids.result?.value!==true)throw Error('Packaged 3D plates failed');log('PASS packaged welded pergola, drilled plates and export bridge');
 
   }
+  if(!process.argv.includes('--attach')){
+    const sample=fs.readFileSync(path.resolve(__dirname,'../examples/obrabeny-jekl.kov'),'utf8');
+    const advanced=await call('Runtime.evaluate',{expression:`(async()=>{window.app.loadFrom(${JSON.stringify(sample)},null);const s=window.app.store;s.select(s.project.ofType('member3d')[0].id);window.app.view3d.rebuild();const {exportSTEP}=await import('./ui/spatial-step.js');const text=exportSTEP(window.app.view3d.root,s.project),ok=s.derived.counts.errors===0&&s.project.ofType('member3d')[0].machining.length===2&&text.includes('FACE_SURFACE')&&!!document.querySelector('[data-s3="beamcheck"]');window.app.newProject(true);return ok;})()`,awaitPromise:true,returnByValue:true});
+    if(advanced.result?.value!==true)throw Error('Packaged machining and STEP failed');log('PASS packaged machining, engineering controls and STEP geometry');
+  }
   try{const capture=await call('Page.captureScreenshot',{format:'png'});fs.writeFileSync(path.join(out,'start.png'),Buffer.from(capture.data,'base64'));}catch(e){log('WARN optional screenshot: '+e.message);}
   if(!process.argv.includes('--attach')){await call('Runtime.evaluate',{expression:'window.close();true'});log('PASS packaged window closes');}
 }catch(e){log(e.stack);process.exitCode=1}finally{ws?.close();setTimeout(()=>process.exit(process.exitCode||0),500)}})();

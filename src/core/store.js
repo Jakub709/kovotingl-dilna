@@ -1,3 +1,4 @@
+import {memberSolid} from './spatial-solid.js';
 import {resolveReferences} from './constraints.js';
 import {resolveSpatialBindings} from './spatial-bindings.js';
 import {isLocked3,plateFrame} from './spatial-plates.js';
@@ -69,6 +70,7 @@ export class Store {
     try {
       fn(this.project);
       resolveSpatialBindings(this.project);
+      for(const part of buildParts(this.project,this.library)){if(part.machiningError)throw Error(part.machiningError);if(this.project.byId(part.objectId)?.machining?.length)memberSolid(this.project,part,this.project.material(part.materialId,this.library)).dispose();}
       const prior=JSON.parse(before);
       for(const old of prior.objects.filter(o=>o.type==='plate3d'&&isLocked3(prior,o))){const current=this.project.byId(old.id);if(!current||JSON.stringify({...current,locked:old.locked})!==JSON.stringify(old)||JSON.stringify(plateFrame(prior,old))!==JSON.stringify(plateFrame(this.project,current)))throw Error('Operace by změnila zamčený prostorový plech.');}
     } catch (err) {
