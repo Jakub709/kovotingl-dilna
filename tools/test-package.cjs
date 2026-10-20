@@ -8,10 +8,11 @@ const log=(s)=>{fs.appendFileSync(path.join(out,'results.log'),s+'\n');console.l
 fs.writeFileSync(path.join(out,'results.log'),'');
 const child=process.argv.includes('--attach')?null:spawn(exe,[`--remote-debugging-port=${port}`],{env:{...process.env,KOVO_TEST_DATA:path.join(out,'user-data')},stdio:'ignore',windowsHide:true});
 child?.on('error',e=>{log(e.stack);process.exitCode=1});
+child?.on('exit',(code,signal)=>log('Launcher exit '+code+' '+(signal||'')));
 (async()=>{let ws;try{
   let target;
-  for(let n=0;n<120;n++){try{const list=await(await fetch(`http://127.0.0.1:${port}/json`)).json();target=list.find(t=>t.type==='page'&&t.url.includes('index.html'));if(target)break}catch{}await wait(500)}
-  if(!target)throw Error('Packaged application did not expose its window within 60 seconds');
+  for(const deadline=Date.now()+120000;Date.now()<deadline;){try{const list=await(await fetch(`http://127.0.0.1:${port}/json`,{signal:AbortSignal.timeout(2000)})).json();target=list.find(t=>t.type==='page'&&t.url.includes('index.html'));if(target)break}catch{}await wait(500)}
+  if(!target)throw Error('Packaged application did not expose its window within 120 seconds');
   ws=new WebSocket(target.webSocketDebuggerUrl);await new Promise((resolve,reject)=>{ws.onopen=resolve;ws.onerror=reject});
   let seq=0;const pending=new Map();ws.onmessage=e=>{const r=JSON.parse(e.data);if(pending.has(r.id)){const {resolve,reject}=pending.get(r.id);pending.delete(r.id);r.error?reject(Error(JSON.stringify(r.error))):resolve(r.result)}};
   const call=(method,params={})=>new Promise((resolve,reject)=>{const id=++seq;pending.set(id,{resolve,reject});ws.send(JSON.stringify({id,method,params}));setTimeout(()=>{if(pending.delete(id))reject(Error('CDP timeout '+method))},15000).unref()});
